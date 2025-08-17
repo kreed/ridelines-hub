@@ -54,33 +54,6 @@ resource "aws_iam_role" "github_actions" {
   tags = var.tags
 }
 
-# IAM policy for S3 deployment
-resource "aws_iam_policy" "s3_deployment" {
-  name        = "${var.environment}-${replace(var.domain_name, ".", "-")}-s3-deployment"
-  description = "Policy for GitHub Actions to deploy to S3"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject",
-          "s3:PutObjectAcl",
-          "s3:GetObject",
-          "s3:DeleteObject",
-          "s3:ListBucket"
-        ]
-        Resource = [
-          var.s3_bucket_arn,
-          "${var.s3_bucket_arn}/*"
-        ]
-      }
-    ]
-  })
-
-  tags = var.tags
-}
 
 # IAM policy for CloudFront invalidation
 resource "aws_iam_policy" "cloudfront_invalidation" {
@@ -106,12 +79,7 @@ resource "aws_iam_policy" "cloudfront_invalidation" {
 }
 
 # Attach policies to the GitHub Actions role
-resource "aws_iam_role_policy_attachment" "s3_deployment" {
+resource "aws_iam_role_policy_attachment" "admin_access" {
   role       = aws_iam_role.github_actions.name
-  policy_arn = aws_iam_policy.s3_deployment.arn
-}
-
-resource "aws_iam_role_policy_attachment" "cloudfront_invalidation" {
-  role       = aws_iam_role.github_actions.name
-  policy_arn = aws_iam_policy.cloudfront_invalidation.arn
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }

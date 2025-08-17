@@ -1,3 +1,7 @@
+# Data sources for CloudFront logging
+data "aws_cloudfront_log_delivery_canonical_user_id" "cloudfront" {}
+data "aws_canonical_user_id" "current" {}
+
 # CloudFront Origin Access Control
 resource "aws_cloudfront_origin_access_control" "main" {
   name                              = "${var.domain_name}-oac"
@@ -142,7 +146,28 @@ resource "aws_s3_bucket_acl" "logs" {
   count      = var.enable_logging ? 1 : 0
   depends_on = [aws_s3_bucket_ownership_controls.logs]
   bucket     = aws_s3_bucket.logs[0].id
-  acl        = "log-delivery-write"
+
+  access_control_policy {
+    grant {
+      grantee {
+        id   = data.aws_cloudfront_log_delivery_canonical_user_id.cloudfront.id
+        type = "CanonicalUser"
+      }
+      permission = "FULL_CONTROL"
+    }
+
+    grant {
+      grantee {
+        id   = data.aws_canonical_user_id.current.id
+        type = "CanonicalUser"
+      }
+      permission = "FULL_CONTROL"
+    }
+
+    owner {
+      id = data.aws_canonical_user_id.current.id
+    }
+  }
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "logs" {
