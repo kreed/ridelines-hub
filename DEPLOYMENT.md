@@ -54,11 +54,8 @@ tofu apply
 
 #### Variables (non-sensitive values):
 - `DOMAIN_NAME`: ridelines.xyz
-- `GITHUB_ORG`: kreed  
-- `GITHUB_REPO`: ridelines-website
+- `AWS_REGION`: us-west-2
 - `S3_BUCKET_NAME`: Get from `tofu output s3_bucket_name`
-- `CLOUDFRONT_DISTRIBUTION_ID`: Get from `tofu output cloudfront_distribution_id`
-- `PUBLIC_API_BASE_URL`: https://api.ridelines.xyz
 
 ### 4. Enable GitHub Actions
 

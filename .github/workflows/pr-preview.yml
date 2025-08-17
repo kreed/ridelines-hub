@@ -40,7 +40,6 @@ jobs:
         run: npm run build
         env:
           PUBLIC_MAPBOX_ACCESS_TOKEN: ${{ secrets.PUBLIC_MAPBOX_ACCESS_TOKEN }}
-          PUBLIC_API_BASE_URL: ${{ vars.PUBLIC_API_BASE_URL }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.3.1
@@ -56,10 +55,17 @@ jobs:
             --delete \
             --cache-control "public, max-age=300"
 
+      - name: Lookup CloudFront distribution ID
+        run: |
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?Aliases.Items[0]=='${{ vars.DOMAIN_NAME }}'].Id" \
+            --output text)
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$DISTRIBUTION_ID" >> $GITHUB_ENV
+
       - name: Create CloudFront invalidation for preview
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
             --paths "/pr-${{ github.event.pull_request.number }}/*"
 
       - name: Comment preview URL on PR
@@ -125,8 +131,15 @@ jobs:
         run: |
           aws s3 rm s3://${{ vars.S3_BUCKET_NAME }}/pr-${{ github.event.pull_request.number }}/ --recursive
 
+      - name: Lookup CloudFront distribution ID for cleanup
+        run: |
+          DISTRIBUTION_ID=$(aws cloudfront list-distributions \
+            --query "DistributionList.Items[?Aliases.Items[0]=='${{ vars.DOMAIN_NAME }}'].Id" \
+            --output text)
+          echo "CLOUDFRONT_DISTRIBUTION_ID=$DISTRIBUTION_ID" >> $GITHUB_ENV
+
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --distribution-id $CLOUDFRONT_DISTRIBUTION_ID \
             --paths "/pr-${{ github.event.pull_request.number }}/*"

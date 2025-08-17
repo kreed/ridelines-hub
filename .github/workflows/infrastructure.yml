@@ -15,6 +15,9 @@ on:
       - '.github/workflows/infrastructure.yml'
   workflow_dispatch:
 
+env:
+  TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+
 permissions:
   id-token: write
   contents: read
