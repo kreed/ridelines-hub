@@ -1,6 +1,6 @@
 <script lang="ts">
-    export let show: boolean = false;
-    export let message: string = '';
+export let show: boolean = false;
+export let message: string = "";
 </script>
 
 {#if show}

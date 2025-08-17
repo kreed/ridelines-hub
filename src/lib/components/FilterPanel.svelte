@@ -1,16 +1,16 @@
 <script lang="ts">
-    import type { FilterableActivityType } from '../types.js';
-    
-    export let activityTypes: FilterableActivityType[] = [];
-    export let checkedTypes: string[] = [];
-    
-    function toggleType(type: string): void {
-        if (checkedTypes.includes(type)) {
-            checkedTypes = checkedTypes.filter(t => t !== type);
-        } else {
-            checkedTypes = [...checkedTypes, type];
-        }
-    }
+import type { FilterableActivityType } from "../types.js";
+
+export let activityTypes: FilterableActivityType[] = [];
+export let checkedTypes: string[] = [];
+
+function toggleType(type: string): void {
+	if (checkedTypes.includes(type)) {
+		checkedTypes = checkedTypes.filter((t) => t !== type);
+	} else {
+		checkedTypes = [...checkedTypes, type];
+	}
+}
 </script>
 
 <nav class="filter-group">
