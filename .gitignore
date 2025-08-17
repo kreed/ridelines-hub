@@ -17,8 +17,20 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+!.env.production.example
 !.env.test
 
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Terraform/OpenTofu
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+terraform/backend.hcl
+!terraform/backend.hcl.example

@@ -1,0 +1,80 @@
+name: Deploy Website
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'terraform/**'
+      - '.github/workflows/infrastructure.yml'
+      - '*.md'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to S3/CloudFront
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build application
+        run: npm run build
+        env:
+          PUBLIC_MAPBOX_ACCESS_TOKEN: ${{ secrets.PUBLIC_MAPBOX_ACCESS_TOKEN }}
+          PUBLIC_API_BASE_URL: ${{ vars.PUBLIC_API_BASE_URL }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: github-actions-deploy
+          aws-region: us-west-2
+
+      - name: Deploy to S3
+        run: |
+          aws s3 sync build/ s3://${{ vars.S3_BUCKET_NAME }}/ \
+            --delete \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*.html" \
+            --exclude "service-worker.js" \
+            --exclude "robots.txt"
+          
+          # Set shorter cache for HTML and service worker
+          aws s3 sync build/ s3://${{ vars.S3_BUCKET_NAME }}/ \
+            --cache-control "public, max-age=3600" \
+            --include "*.html" \
+            --include "service-worker.js" \
+            --include "robots.txt"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Application built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Files deployed to S3 bucket: ${{ vars.S3_BUCKET_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "✅ CloudFront cache invalidated for distribution: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 Website available at: https://${{ vars.DOMAIN_NAME }}" >> $GITHUB_STEP_SUMMARY
