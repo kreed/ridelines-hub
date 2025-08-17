@@ -94,7 +94,7 @@ resource "aws_cloudfront_distribution" "main" {
 
 # Security headers policy
 resource "aws_cloudfront_response_headers_policy" "security_headers" {
-  name    = "${var.domain_name}-security-headers"
+  name    = "${var.s3_bucket_name}-security-headers"
   comment = "Security headers for ${var.domain_name}"
 
   security_headers_config {
@@ -128,6 +128,23 @@ resource "aws_s3_bucket" "logs" {
   tags   = var.tags
 }
 
+# Enable ACL access for CloudFront logs bucket
+resource "aws_s3_bucket_ownership_controls" "logs" {
+  count  = var.enable_logging ? 1 : 0
+  bucket = aws_s3_bucket.logs[0].id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "logs" {
+  count      = var.enable_logging ? 1 : 0
+  depends_on = [aws_s3_bucket_ownership_controls.logs]
+  bucket     = aws_s3_bucket.logs[0].id
+  acl        = "log-delivery-write"
+}
+
 resource "aws_s3_bucket_lifecycle_configuration" "logs" {
   count  = var.enable_logging ? 1 : 0
   bucket = aws_s3_bucket.logs[0].id
@@ -135,6 +152,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
   rule {
     id     = "delete_logs"
     status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
 
     expiration {
       days = 90
