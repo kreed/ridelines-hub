@@ -2,6 +2,16 @@
 data "aws_cloudfront_log_delivery_canonical_user_id" "cloudfront" {}
 data "aws_canonical_user_id" "current" {}
 
+# Data sources for managed cache policies
+data "aws_cloudfront_cache_policy" "caching_disabled" {
+  name = "Managed-CachingDisabled"
+}
+
+data "aws_cloudfront_cache_policy" "caching_optimized" {
+  name = "Managed-CachingOptimized"
+}
+
+
 # CloudFront Origin Access Control
 resource "aws_cloudfront_origin_access_control" "main" {
   name                              = "${var.domain_name}-oac"
@@ -17,6 +27,10 @@ resource "aws_cloudfront_distribution" "main" {
     domain_name              = var.s3_bucket_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
     origin_id                = "S3-${var.s3_bucket_name}"
+    
+    s3_origin_config {
+      origin_access_identity = ""
+    }
   }
 
   enabled             = true
@@ -36,8 +50,8 @@ resource "aws_cloudfront_distribution" "main" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
 
-    # Use managed cache policy for static websites
-    cache_policy_id = "83da9c7e-98b4-4e11-a168-04f0df8e2c65" # CachingDisabled for SPA
+    # Use managed cache policy for SPA (no caching)
+    cache_policy_id = data.aws_cloudfront_cache_policy.caching_disabled.id
 
     # Security headers
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
@@ -52,8 +66,8 @@ resource "aws_cloudfront_distribution" "main" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
 
-    # Use managed cache policy optimized for static content
-    cache_policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingOptimized
+    # Use managed cache policy optimized for static content (with caching)
+    cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimized.id
   }
 
   # Custom error pages for SPA routing

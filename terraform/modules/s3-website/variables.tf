@@ -13,11 +13,6 @@ variable "environment" {
   type        = string
 }
 
-variable "cloudfront_distribution_arn" {
-  description = "CloudFront distribution ARN for bucket policy"
-  type        = string
-  default     = ""
-}
 
 variable "tags" {
   description = "Tags to apply to resources"
