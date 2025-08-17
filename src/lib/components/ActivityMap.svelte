@@ -4,8 +4,6 @@
     import FilterPanel from './FilterPanel.svelte';
     import ErrorMessage from './ErrorMessage.svelte';
     import type { Config, ActivityProperties, FilterableActivityType, SimpleMap } from '../types.js';
-    // Types are automatically included via .d.ts files
-    // Use dynamic imports for client-side only components
     
     export let config: Config;
     
@@ -85,9 +83,6 @@
             maxzoom: header.maxZoom,
             bounds: bounds
         });
-        
-        // Fit map to activity bounds
-        map!.fitBounds(bounds, { padding: 20 });
     }
     
     function addActivityLayer(): void {
