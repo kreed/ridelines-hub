@@ -3,12 +3,9 @@
 
 terraform {
   backend "s3" {
-    # These values will be provided via backend configuration file or CLI
-    # bucket         = "ridelines-terraform-state"
-    # key            = "ridelines-hub/terraform.tfstate"
-    # region         = "us-west-2"
-    # dynamodb_table = "ridelines-terraform-locks"
-    # encrypt        = true
+    bucket = "terraform-284419413007"
+    key    = "ridelines-hub/terraform.tfstate"
+    region = "us-west-2"
   }
 }
 
