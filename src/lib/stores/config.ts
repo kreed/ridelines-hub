@@ -2,9 +2,8 @@ import { writable } from "svelte/store";
 import type { Config } from "../types.js";
 
 export const config = writable<Config>({
-	mapboxToken:
-		"pk.eyJ1Ijoia3JlM2QiLCJhIjoiY2lwcXI2Z204MDZtcmZvbTM2Yjl4bml6aiJ9._nRi_W6qgFwhEYMjxP2OZw",
-	mapStyle: "mapbox://styles/kre3d/cmd2b99ga00pi01sr90ly1z3d",
+	mapStyle:
+		"https://api.maptiler.com/maps/satellite/style.json?key=8Uqpw3E0b3ZQpe36fW7y", // TODO: Load API key from environment variable
 	pmtilesUrl: "https://kreed.org/strava/i351926.pmtiles", // TODO: Make this configurable per athlete
 	activityTypes: ["Ride", "Run", "Walk", "Hike", "AlpineSki"] as const,
 	activityColors: {

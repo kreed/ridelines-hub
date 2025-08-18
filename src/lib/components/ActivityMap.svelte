@@ -1,11 +1,15 @@
 <script lang="ts">
+import maplibregl, {
+	type DataDrivenPropertyValueSpecification,
+	type FilterSpecification,
+} from "maplibre-gl";
+import { Protocol } from "pmtiles";
 import { onDestroy, onMount } from "svelte";
 import { browser } from "$app/environment";
 import type {
 	ActivityProperties,
 	Config,
 	FilterableActivityType,
-	SimpleMap,
 } from "../types.js";
 import ErrorMessage from "./ErrorMessage.svelte";
 import FilterPanel from "./FilterPanel.svelte";
@@ -13,7 +17,7 @@ import FilterPanel from "./FilterPanel.svelte";
 export let config: Config;
 
 let mapContainer: HTMLDivElement;
-let map: SimpleMap | null = null;
+let map: maplibregl.Map;
 let errorMessage = "";
 let showError = false;
 
@@ -34,22 +38,11 @@ onDestroy(() => {
 
 async function initializeMap(): Promise<void> {
 	try {
-		// Dynamic import for client-side only
-		const [mapboxglModule, mapboxPmTilesModule] = await Promise.all([
-			import("mapbox-gl"),
-			import("mapbox-pmtiles"),
-		]);
+		// Add PMTiles protocol
+		const protocol = new Protocol();
+		maplibregl.addProtocol("pmtiles", protocol.tile);
 
-		const mapboxgl = mapboxglModule.default;
-		const mapboxPmTiles = mapboxPmTilesModule;
-
-		mapboxgl.accessToken = config.mapboxToken;
-		mapboxgl.Style.setSourceType(
-			mapboxPmTiles.SOURCE_TYPE,
-			mapboxPmTiles.PmTilesSource,
-		);
-
-		map = new mapboxgl.Map({
+		map = new maplibregl.Map({
 			container: mapContainer,
 			style: config.mapStyle,
 			center: config.defaultCenter,
@@ -57,13 +50,13 @@ async function initializeMap(): Promise<void> {
 			hash: true,
 		});
 
-		map.addControl(new mapboxgl.NavigationControl());
+		map.addControl(new maplibregl.NavigationControl());
 
-		map.on("load", async () => {
+		map.on("load", () => {
 			try {
-				await loadPMTiles(mapboxPmTiles);
+				addActivitySource();
 				addActivityLayer();
-				setupActivityPopups(mapboxgl);
+				setupActivityPopups();
 			} catch (error) {
 				showErrorMessage(
 					`Failed to load activity data: ${(error as Error).message}`,
@@ -75,27 +68,15 @@ async function initializeMap(): Promise<void> {
 	}
 }
 
-async function loadPMTiles(mapboxPmTiles: any): Promise<void> {
-	const header = await mapboxPmTiles.PmTilesSource.getHeader(config.pmtilesUrl);
-
-	const bounds: [number, number, number, number] = [
-		header.minLon,
-		header.minLat,
-		header.maxLon,
-		header.maxLat,
-	];
-
-	map?.addSource("activities", {
-		type: mapboxPmTiles.PmTilesSource.SOURCE_TYPE,
-		url: config.pmtilesUrl,
-		minzoom: header.minZoom,
-		maxzoom: header.maxZoom,
-		bounds: bounds,
+function addActivitySource() {
+	map.addSource("activities", {
+		type: "vector",
+		url: `pmtiles://${config.pmtilesUrl}`,
 	});
 }
 
 function addActivityLayer(): void {
-	const colorExpression = ["match", ["get", "type"]] as string[];
+	const colorExpression = ["match", ["get", "type"]];
 
 	// Add color mappings for each activity type
 	Object.entries(config.activityColors).forEach(([type, color]) => {
@@ -107,33 +88,35 @@ function addActivityLayer(): void {
 	// Add default color
 	colorExpression.push(config.activityColors.default);
 
-	map?.addLayer({
+	map.addLayer({
 		id: "activity-lines",
 		type: "line",
 		source: "activities",
 		"source-layer": "activities",
 		paint: {
 			"line-width": ["interpolate", ["linear"], ["zoom"], 10, 1, 16, 3],
-			"line-color": colorExpression,
+			"line-color":
+				colorExpression as unknown as DataDrivenPropertyValueSpecification<string>,
 			"line-opacity": 0.8,
 		},
 	});
 }
 
-function setupActivityPopups(mapboxgl: any): void {
-	map?.on("mouseenter", "activity-lines", () => {
-		map?.getCanvas().style.cursor = "pointer";
+function setupActivityPopups(): void {
+	map.on("mouseenter", "activity-lines", () => {
+		map.getCanvas().style.cursor = "pointer";
 	});
 
-	map?.on("mouseleave", "activity-lines", () => {
-		map?.getCanvas().style.cursor = "";
+	map.on("mouseleave", "activity-lines", () => {
+		map.getCanvas().style.cursor = "";
 	});
 
-	map?.on("click", "activity-lines", (e: any) => {
-		const properties: ActivityProperties = e.features[0].properties;
+	map.on("click", "activity-lines", (e) => {
+		const properties: ActivityProperties = e.features?.[0]
+			?.properties as ActivityProperties;
 		const popupContent = createActivityPopup(properties);
 
-		new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(popupContent).addTo(map);
+		new maplibregl.Popup().setLngLat(e.lngLat).setHTML(popupContent).addTo(map);
 	});
 }
 
@@ -221,7 +204,7 @@ function updateMapFilter(): void {
 	const hasOtherChecked = checkedTypes.includes("Other");
 	const mainTypes = checkedTypes.filter((type) => type !== "Other");
 
-	let filter: any[];
+	let filter = [];
 
 	if (hasOtherChecked && mainTypes.length > 0) {
 		filter = [
@@ -235,7 +218,7 @@ function updateMapFilter(): void {
 		filter = ["in", "type", ...mainTypes];
 	}
 
-	map.setFilter("activity-lines", filter);
+	map.setFilter("activity-lines", filter as unknown as FilterSpecification);
 }
 </script>
 
@@ -260,7 +243,7 @@ function updateMapFilter(): void {
         height: 100%;
     }
     
-    :global(.mapboxgl-popup-content) {
+    :global(.maplibregl-popup-content) {
         padding: 15px;
         border-radius: 5px;
     }
