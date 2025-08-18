@@ -12,10 +12,19 @@ data "aws_cloudfront_cache_policy" "caching_optimized" {
 }
 
 
-# CloudFront Origin Access Control
+# CloudFront Origin Access Control for website
 resource "aws_cloudfront_origin_access_control" "main" {
   name                              = "${var.domain_name}-oac"
   description                       = "OAC for ${var.domain_name}"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
+# CloudFront Origin Access Control for activities
+resource "aws_cloudfront_origin_access_control" "activities" {
+  name                              = "${var.domain_name}-activities-oac"
+  description                       = "OAC for ${var.domain_name} activities"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
@@ -27,6 +36,16 @@ resource "aws_cloudfront_distribution" "main" {
     domain_name              = var.s3_bucket_domain_name
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
     origin_id                = "S3-${var.s3_bucket_name}"
+    
+    s3_origin_config {
+      origin_access_identity = ""
+    }
+  }
+
+  origin {
+    domain_name              = var.activities_bucket_domain_name
+    origin_access_control_id = aws_cloudfront_origin_access_control.activities.id
+    origin_id                = "S3-${var.activities_bucket_name}"
     
     s3_origin_config {
       origin_access_identity = ""
@@ -64,6 +83,19 @@ resource "aws_cloudfront_distribution" "main" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "S3-${var.s3_bucket_name}"
     compress               = true
+    viewer_protocol_policy = "redirect-to-https"
+
+    # Use managed cache policy optimized for static content (with caching)
+    cache_policy_id = data.aws_cloudfront_cache_policy.caching_optimized.id
+  }
+
+  # Cache behavior for activities (PMTiles)
+  ordered_cache_behavior {
+    path_pattern           = "/activities/*"
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = "S3-${var.activities_bucket_name}"
+    compress               = false  # PMTiles are already compressed
     viewer_protocol_policy = "redirect-to-https"
 
     # Use managed cache policy optimized for static content (with caching)
