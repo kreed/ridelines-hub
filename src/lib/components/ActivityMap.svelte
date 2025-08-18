@@ -6,6 +6,7 @@ import maplibregl, {
 import { Protocol } from "pmtiles";
 import { onDestroy, onMount } from "svelte";
 import { browser } from "$app/environment";
+import { MAPTILER_API_KEY } from "../stores/config.js";
 import type {
 	ActivityProperties,
 	Config,
@@ -23,6 +24,44 @@ let showError = false;
 
 // Reactive filter state
 let checkedTypes = ["Ride", "Run", "Walk", "Hike", "AlpineSki", "Other"];
+
+// Style management
+let currentMapStyle = config.mapStyles[0]?.url || "";
+
+function setupMapLayers() {
+	try {
+		// Enable globe projection
+		map.setProjection({ type: "globe" });
+
+		// Add terrain elevation source
+		addTerrainSource();
+
+		// Enable terrain rendering
+		enableTerrain();
+
+		addActivitySource();
+		addActivityLayer();
+		setupActivityPopups();
+	} catch (error) {
+		showErrorMessage(
+			`Failed to load activity data: ${(error as Error).message}`,
+		);
+	}
+}
+
+function handleStyleChange(newStyleUrl: string) {
+	if (map && newStyleUrl !== currentMapStyle) {
+		currentMapStyle = newStyleUrl;
+		map.setStyle(newStyleUrl);
+
+		// Re-setup layers after style loads
+		map.once("style.load", () => {
+			setupMapLayers();
+			// Re-apply current filters
+			updateMapFilter();
+		});
+	}
+}
 
 onMount(async () => {
 	if (browser) {
@@ -44,7 +83,7 @@ async function initializeMap(): Promise<void> {
 
 		map = new maplibregl.Map({
 			container: mapContainer,
-			style: config.mapStyle,
+			style: currentMapStyle,
 			center: config.defaultCenter,
 			zoom: config.defaultZoom,
 			hash: true,
@@ -52,16 +91,8 @@ async function initializeMap(): Promise<void> {
 
 		map.addControl(new maplibregl.NavigationControl());
 
-		map.on("load", () => {
-			try {
-				addActivitySource();
-				addActivityLayer();
-				setupActivityPopups();
-			} catch (error) {
-				showErrorMessage(
-					`Failed to load activity data: ${(error as Error).message}`,
-				);
-			}
+		map.on("style.load", () => {
+			setupMapLayers();
 		});
 	} catch (error) {
 		showErrorMessage(`Failed to initialize map: ${(error as Error).message}`);
@@ -99,6 +130,21 @@ function addActivityLayer(): void {
 				colorExpression as unknown as DataDrivenPropertyValueSpecification<string>,
 			"line-opacity": 0.8,
 		},
+	});
+}
+
+function addTerrainSource() {
+	map.addSource("terrain", {
+		type: "raster-dem",
+		url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MAPTILER_API_KEY}`,
+		tileSize: 256,
+	});
+}
+
+function enableTerrain() {
+	map.setTerrain({
+		source: "terrain",
+		exaggeration: 1.5,
 	});
 }
 
@@ -227,6 +273,9 @@ function updateMapFilter(): void {
     <FilterPanel 
         activityTypes={[...config.activityTypes, 'Other'] as FilterableActivityType[]}
         bind:checkedTypes
+        mapStyles={config.mapStyles}
+        currentStyle={currentMapStyle}
+        onStyleChange={handleStyleChange}
     />
     <ErrorMessage bind:show={showError} message={errorMessage} />
 </div>

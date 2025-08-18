@@ -1,5 +1,11 @@
+export interface MapStyle {
+	id: string;
+	name: string;
+	url: string;
+}
+
 export interface Config {
-	mapStyle: string;
+	mapStyles: MapStyle[];
 	pmtilesUrl: string;
 	activityTypes: ActivityType[];
 	activityColors: Record<string, string>;
