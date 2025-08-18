@@ -77,13 +77,14 @@ $: currentStyleData =
         position: absolute;
         top: 10px;
         left: 10px;
-        z-index: 1000;
+        z-index: 9999;
         border-radius: 6px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         overflow: hidden;
         min-width: 160px;
         max-width: 220px;
         font-family: 'Helvetica Neue', Arial, sans-serif;
+        pointer-events: auto;
     }
     
     @media (max-width: 480px) {
@@ -111,6 +112,7 @@ $: currentStyleData =
         font-weight: 500;
         color: #333;
         transition: background-color 0.2s ease;
+        pointer-events: auto;
     }
 
     .style-button:hover {
@@ -182,6 +184,8 @@ $: currentStyleData =
         text-transform: capitalize;
         border-bottom: 1px solid rgba(0, 0, 0, 0.25);
         transition: background-color 0.2s ease;
+        pointer-events: auto;
+        user-select: none;
     }
     
     .filter-label:hover,

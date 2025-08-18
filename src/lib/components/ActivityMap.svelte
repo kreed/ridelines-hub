@@ -33,13 +33,10 @@ function setupMapLayers() {
 		// Enable globe projection
 		map.setProjection({ type: "globe" });
 
-		// Add terrain elevation source
-		addTerrainSource();
-
 		// Enable terrain rendering
 		enableTerrain();
 
-		addActivitySource();
+		// Add layers (sources should already exist)
 		addActivityLayer();
 		setupActivityPopups();
 	} catch (error) {
@@ -89,9 +86,18 @@ async function initializeMap(): Promise<void> {
 			hash: true,
 		});
 
-		map.addControl(new maplibregl.NavigationControl());
+		map.addControl(
+			new maplibregl.NavigationControl({
+				showCompass: true,
+				showZoom: true,
+				visualizePitch: true,
+			}),
+		);
 
 		map.on("style.load", () => {
+			// Add sources only once during initial setup
+			addTerrainSource();
+			addActivitySource();
 			setupMapLayers();
 		});
 	} catch (error) {
@@ -240,7 +246,7 @@ $: if (map && checkedTypes) {
 }
 
 function updateMapFilter(): void {
-	if (!map) return;
+	if (!map || !map.isStyleLoaded()) return;
 
 	if (checkedTypes.length === 0) {
 		map.setFilter("activity-lines", ["==", "type", ""]);
