@@ -18,6 +18,21 @@ variable "s3_bucket_arn" {
   type        = string
 }
 
+variable "activities_bucket_name" {
+  description = "Name of the S3 activities bucket"
+  type        = string
+}
+
+variable "activities_bucket_domain_name" {
+  description = "Domain name of the S3 activities bucket"
+  type        = string
+}
+
+variable "activities_bucket_arn" {
+  description = "ARN of the S3 activities bucket"
+  type        = string
+}
+
 variable "certificate_arn" {
   description = "SSL Certificate ARN"
   type        = string

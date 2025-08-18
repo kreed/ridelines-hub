@@ -23,6 +23,16 @@ output "s3_bucket_arn" {
   value       = module.s3_website.bucket_arn
 }
 
+output "activities_bucket_name" {
+  description = "Name of the S3 activities bucket"
+  value       = module.s3_activities.bucket_name
+}
+
+output "activities_bucket_arn" {
+  description = "ARN of the S3 activities bucket"
+  value       = module.s3_activities.bucket_arn
+}
+
 output "hosted_zone_id" {
   description = "Route 53 Hosted Zone ID"
   value       = module.dns.hosted_zone_id
@@ -40,7 +50,7 @@ output "github_actions_role_arn" {
 
 output "deployment_instructions" {
   description = "Instructions for setting up GitHub Actions"
-  value = <<EOT
+  value       = <<EOT
 To set up GitHub Actions deployment:
 
 1. Add these secrets to your GitHub repository:

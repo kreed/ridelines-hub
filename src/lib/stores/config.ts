@@ -22,7 +22,7 @@ export const config = writable<Config>({
 			url: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${MAPTILER_API_KEY}`,
 		},
 	],
-	pmtilesUrl: "https://kreed.org/strava/i351926.pmtiles", // TODO: Make this configurable per athlete
+	pmtilesUrl: "https://ridelines.xyz/activities/i351926.pmtiles", // TODO: Make this configurable per athlete
 	activityTypes: ["Ride", "Run", "Walk", "Hike", "AlpineSki"] as const,
 	activityColors: {
 		Ride: "#14affc",
