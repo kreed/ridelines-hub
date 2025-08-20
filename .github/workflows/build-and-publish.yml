@@ -21,7 +21,7 @@ permissions:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ridelines/hub
+  IMAGE_NAME: kreed/ridelines-hub
 
 jobs:
   test:
