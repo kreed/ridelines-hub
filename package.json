@@ -40,7 +40,7 @@
 		"vitest-browser-svelte": "^1.1.0"
 	},
 	"dependencies": {
-		"maplibre-gl": "^5.6.2",
+		"maplibre-gl": "^5.7.0",
 		"pmtiles": "^4.3.0"
 	}
 }
