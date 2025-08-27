@@ -25,7 +25,7 @@ env:
 
 jobs:
   test:
-    name: Test Application
+    name: Test
     runs-on: ubuntu-latest
 
     steps:
@@ -50,10 +50,8 @@ jobs:
       - name: Run tests
         run: npm run test
 
-  build-and-publish:
-    name: Build and Publish Package
-    needs: test
-    if: github.ref == 'refs/heads/main'
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -69,17 +67,38 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: build/
+          retention-days: 1
+
+  publish:
+    name: Publish
+    needs: [test, build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: build/
+
       - name: Get hub commit SHA
         id: hub_sha
         run: |
           COMMIT_SHA=$(git rev-parse HEAD)
           echo "sha=${COMMIT_SHA}" >> $GITHUB_OUTPUT
           echo "Hub commit SHA: ${COMMIT_SHA}"
-
-      - name: Build application
-        run: npm run build
-        env:
-          PUBLIC_MAPBOX_ACCESS_TOKEN: ${{ secrets.PUBLIC_MAPBOX_ACCESS_TOKEN }}
 
       - name: Create Hub Dockerfile
         run: |
