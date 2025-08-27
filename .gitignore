@@ -9,6 +9,9 @@ node_modules
 /.svelte-kit
 /build
 
+# Auto-generated API client
+/src/lib/api
+
 # OS
 .DS_Store
 Thumbs.db
@@ -23,14 +26,3 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-
-# Terraform/OpenTofu
-.terraform/
-.terraform.lock.hcl
-*.tfstate
-*.tfstate.*
-*.tfplan
-*.tfvars
-!*.tfvars.example
-terraform/backend.hcl
-!terraform/backend.hcl.example

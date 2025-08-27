@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "npm run generate-types && vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -15,16 +15,19 @@
 		"posttest": "npm run lint",
 		"test:unit": "vitest",
 		"test": "echo skip tests",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"generate-types": "openapi-ts -i https://raw.githubusercontent.com/kreed/ridelines-drivetrain/refs/heads/main/openapi/ridelines-api.yaml -o src/lib/api -c @hey-api/client-fetch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",
+		"@hey-api/openapi-ts": "^0.81.1",
 		"@playwright/test": "^1.55.0",
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/adapter-static": "^3.0.9",
 		"@sveltejs/kit": "^2.36.2",
 		"@sveltejs/vite-plugin-svelte": "^6.1.3",
 		"@tailwindcss/vite": "^4.0.0",
+		"@types/node": "^24.3.0",
 		"@vitest/browser": "^3.2.3",
 		"globals": "^16.0.0",
 		"playwright": "^1.55.0",

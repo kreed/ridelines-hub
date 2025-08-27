@@ -6,7 +6,8 @@ import maplibregl, {
 import { Protocol } from "pmtiles";
 import { onDestroy, onMount } from "svelte";
 import { browser } from "$app/environment";
-import { MAPTILER_API_KEY } from "../stores/config.js";
+import { env } from "$lib/config/env.js";
+import { authStore } from "$lib/stores/auth.svelte.js";
 import type {
 	ActivityProperties,
 	Config,
@@ -106,9 +107,15 @@ async function initializeMap(): Promise<void> {
 }
 
 function addActivitySource() {
+	const pmtilesUrl = authStore.pmtilesUrl;
+	if (!pmtilesUrl) {
+		showErrorMessage("No PMTiles URL available. Please refresh the page.");
+		return;
+	}
+
 	map.addSource("activities", {
 		type: "vector",
-		url: `pmtiles://${config.pmtilesUrl}`,
+		url: `pmtiles://${pmtilesUrl}`,
 	});
 }
 
@@ -142,7 +149,7 @@ function addActivityLayer(): void {
 function addTerrainSource() {
 	map.addSource("terrain", {
 		type: "raster-dem",
-		url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${MAPTILER_API_KEY}`,
+		url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${env.MAPTILER_API_KEY}`,
 		tileSize: 256,
 	});
 }
