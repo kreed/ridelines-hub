@@ -37,7 +37,7 @@ function setupMapLayers() {
 		// Enable terrain rendering
 		enableTerrain();
 
-		// Add layers (sources should already exist)
+		// Add activity layer and setup popups
 		addActivityLayer();
 		setupActivityPopups();
 	} catch (error) {
@@ -50,11 +50,14 @@ function setupMapLayers() {
 function handleStyleChange(newStyleUrl: string) {
 	if (map && newStyleUrl !== currentMapStyle) {
 		currentMapStyle = newStyleUrl;
+		styleLoaded = false;
 		map.setStyle(newStyleUrl);
 
 		// Re-setup layers after style loads
 		map.once("style.load", () => {
-			setupMapLayers();
+			styleLoaded = true;
+			addTerrainSource();
+			// Activity source and layers will be added reactively
 			// Re-apply current filters
 			updateMapFilter();
 		});
@@ -96,27 +99,44 @@ async function initializeMap(): Promise<void> {
 		);
 
 		map.on("style.load", () => {
-			// Add sources only once during initial setup
+			styleLoaded = true;
+			// Add terrain source immediately
 			addTerrainSource();
-			addActivitySource();
-			setupMapLayers();
+			// Activity source will be added reactively when auth completes
 		});
 	} catch (error) {
 		showErrorMessage(`Failed to initialize map: ${(error as Error).message}`);
 	}
 }
 
-function addActivitySource() {
-	const pmtilesUrl = authStore.pmtilesUrl;
-	if (!pmtilesUrl) {
-		showErrorMessage("No PMTiles URL available. Please refresh the page.");
-		return;
-	}
+// Track if style is loaded
+let styleLoaded = false;
 
-	map.addSource("activities", {
-		type: "vector",
-		url: `pmtiles://${pmtilesUrl}`,
-	});
+// Reactive statement to add activity source when both style and auth are ready
+$: if (map && styleLoaded && authStore.pmtilesUrl && !authStore.isLoading) {
+	addActivitySourceAndLayers();
+}
+
+function addActivitySourceAndLayers() {
+	try {
+		// Check if source already exists to avoid duplicate additions
+		if (map.getSource("activities")) {
+			return;
+		}
+
+		const pmtilesUrl = authStore.pmtilesUrl;
+		map.addSource("activities", {
+			type: "vector",
+			url: `pmtiles://${pmtilesUrl}`,
+		});
+
+		// Set up layers after source is added
+		setupMapLayers();
+	} catch (error) {
+		showErrorMessage(
+			`Failed to add activity data: ${(error as Error).message}`,
+		);
+	}
 }
 
 function addActivityLayer(): void {
