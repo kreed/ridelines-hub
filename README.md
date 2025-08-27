@@ -1,28 +1,31 @@
 # Ridelines Hub
 
-A high-performance SvelteKit web application for visualizing GPS activities on stunning 3D terrain maps using MapLibre GL JS and PMTiles.
+The interactive frontend for the Ridelines GPS activity visualization platform. A SvelteKit application that provides 3D terrain visualization of cycling, running, and hiking activities with OAuth authentication through intervals.icu.
 
 ## Overview
 
-Ridelines Hub is the frontend component of the Ridelines ecosystem, providing an interactive 3D visualization of GPS activities. It renders cycling, running, hiking, and skiing activities on realistic terrain with smooth performance and beautiful aesthetics.
+Ridelines Hub is a high-performance web application that transforms your GPS activities into stunning 3D visualizations. It connects to your intervals.icu account to display your rides, runs, hikes, and other activities on realistic terrain maps.
 
 ### Key Features
 
-- **3D Terrain Visualization**: Realistic terrain rendering with MapLibre GL JS globe projection
-- **Activity Type Filtering**: Interactive filtering for rides, runs, walks, hikes, and alpine skiing
-- **Optimized Performance**: PMTiles protocol for efficient vector tile delivery
-- **Responsive Design**: Mobile-first design that works beautifully on all devices
-- **Type-Safe Development**: Full TypeScript coverage with comprehensive type definitions
-- **Modern Stack**: SvelteKit 2.0 with static adapter for optimal performance
+- **OAuth Authentication**: Secure login through intervals.icu integration
+- **3D Terrain Visualization**: MapLibre GL JS with globe projection and realistic terrain
+- **Activity Filtering**: Interactive controls for different activity types
+- **PMTiles Integration**: Efficient vector tile delivery from personalized data
+- **Responsive Design**: Works seamlessly across desktop and mobile devices
+- **Real-time Updates**: Declarative reactivity with Svelte 5 runes
+- **Static Site**: Optimized for CloudFront CDN deployment
 
 ## Technology Stack
 
-- **Framework**: SvelteKit 2.0 with TypeScript
-- **Mapping**: MapLibre GL JS v4 with PMTiles support
-- **Build Tool**: Vite 5 with static adapter
-- **Code Quality**: Biome for lightning-fast linting and formatting
-- **Testing**: Vitest for unit tests, Playwright for E2E tests
-- **Styling**: Custom CSS with CSS variables for theming
+- **Framework**: SvelteKit 2.0 with TypeScript and static adapter
+- **Authentication**: intervals.icu OAuth 2.0 with JWT cookies
+- **Mapping**: MapLibre GL JS with PMTiles protocol and MapTiler terrain
+- **State Management**: Svelte 5 runes for reactive state
+- **API Client**: Auto-generated TypeScript client from OpenAPI specification
+- **Code Quality**: Biome for linting and formatting
+- **Testing**: Vitest (unit) and Playwright (E2E)
+- **Build**: Vite with proxy configuration for development
 
 ## Getting Started
 
@@ -30,257 +33,280 @@ Ridelines Hub is the frontend component of the Ridelines ecosystem, providing an
 
 - Node.js 20.x or higher
 - npm 10.x or higher
+- intervals.icu account for authentication
 
 ### Development Setup
 
-1. **Clone and install dependencies**:
+1. **Clone and install**:
    ```bash
-   git clone https://github.com/yourusername/ridelines.git
-   cd ridelines/hub
+   git clone <repository-url>
+   cd ridelines-hub
    npm install
    ```
 
-2. **Start development server**:
+2. **Environment configuration**:
+   Create a `.env.local` file:
+   ```env
+   VITE_API_URL=https://api.dev.ridelines.xyz
+   VITE_MAPTILER_API_KEY=your_maptiler_key
+   ```
+
+3. **Start development server**:
    ```bash
    npm run dev
    ```
-   The application will be available at `http://localhost:5173`
+   Visit `http://localhost:5173` - the Vite proxy handles API calls
 
-3. **Run tests**:
+4. **Generate API types** (automatic):
    ```bash
-   npm run test:unit    # Unit tests with Vitest
-   npm run test:e2e     # E2E tests with Playwright
+   npm run generate-types
    ```
 
 ### Available Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start development server with hot module replacement |
-| `npm run build` | Build production-ready static site |
-| `npm run preview` | Preview production build locally |
-| `npm run check` | Type-check TypeScript and Svelte components |
-| `npm run lint` | Lint code with Biome |
-| `npm run format` | Format code with Biome |
-| `npm run test:unit` | Run Vitest unit tests |
-| `npm run test:e2e` | Run Playwright E2E tests |
-
-## Project Structure
-
-```
-hub/
-├── src/
-│   ├── lib/
-│   │   ├── components/         # Reusable Svelte components
-│   │   │   ├── ActivityMap.svelte      # Main 3D map component
-│   │   │   ├── FilterPanel.svelte      # Activity type filters
-│   │   │   ├── ErrorMessage.svelte     # Error display
-│   │   │   └── icons/                  # SVG activity icons
-│   │   ├── stores/            # Svelte stores for state management
-│   │   │   └── activities.ts          # Activity filter state
-│   │   ├── types/             # TypeScript type definitions
-│   │   │   └── activities.ts          # Activity data types
-│   │   └── constants.ts       # Application constants
-│   ├── routes/                # SvelteKit pages and layouts
-│   │   ├── +layout.svelte            # Root layout
-│   │   ├── +page.svelte              # Home page
-│   │   └── +page.ts                  # Page load function
-│   ├── app.d.ts              # Global TypeScript declarations
-│   └── app.html              # HTML template
-├── static/                    # Static assets
-├── tests/                     # Test suites
-│   ├── unit/                 # Vitest unit tests
-│   └── e2e/                  # Playwright E2E tests
-├── biome.jsonc               # Biome configuration
-├── playwright.config.ts      # Playwright configuration
-├── svelte.config.js         # SvelteKit configuration
-├── tsconfig.json            # TypeScript configuration
-├── vite.config.ts           # Vite configuration
-└── package.json             # Dependencies and scripts
-```
+| `npm run dev` | Start development server with API proxy |
+| `npm run build` | Build static site for production |
+| `npm run preview` | Preview production build |
+| `npm run check` | TypeScript and Svelte type checking |
+| `npm run lint` | Code linting with Biome |
+| `npm run format` | Code formatting with Biome |
+| `npm run test:unit` | Vitest unit tests |
+| `npm run test:e2e` | Playwright E2E tests |
+| `npm run generate-types` | Generate API types from OpenAPI spec |
 
 ## Architecture
 
-### Component Architecture
+### Authentication Flow
 
-The application follows a component-based architecture with clear separation of concerns:
+1. **Landing Page**: Unauthenticated users see login prompt
+2. **OAuth Redirect**: Login redirects to intervals.icu OAuth
+3. **Callback Handling**: API processes OAuth callback and sets JWT cookie
+4. **Protected Routes**: `/map` route requires authentication
+5. **API Requests**: All API calls include authentication cookie
 
-- **ActivityMap**: Core map component handling MapLibre GL JS integration
-  - Manages map initialization and lifecycle
-  - Handles PMTiles data source configuration
-  - Implements 3D terrain and sky rendering
-  - Provides smooth navigation controls
+### Component Structure
 
-- **FilterPanel**: Activity filtering interface
-  - Toggles for each activity type
-  - Real-time map filtering without re-rendering
-  - Persistent filter state via Svelte stores
-
-- **ErrorMessage**: Graceful error handling
-  - User-friendly error display
-  - Fallback UI for loading states
-
-### Data Flow
-
-1. **Page Load**: SvelteKit loads the application shell
-2. **Map Initialization**: MapLibre GL JS initializes with terrain
-3. **Data Loading**: PMTiles loaded from CloudFront CDN
-4. **Rendering**: Vector tiles rendered with activity-specific styling
-5. **Interaction**: User filters update map visibility in real-time
+```
+src/
+├── lib/
+│   ├── api/                    # Auto-generated API client and types
+│   ├── components/
+│   │   ├── ActivityMap.svelte     # Main 3D map with reactive data loading
+│   │   ├── FilterPanel.svelte     # Activity type filtering
+│   │   ├── ErrorMessage.svelte    # Error display component
+│   │   └── icons/                 # Activity type SVG icons
+│   ├── services/
+│   │   └── ridelines.ts          # API service with authentication
+│   ├── stores/
+│   │   ├── auth.svelte.ts        # Authentication state (Svelte 5 runes)
+│   │   └── config.ts             # Application configuration
+│   ├── utils/
+│   │   └── auth-guard.ts         # Route protection utilities
+│   ├── config/
+│   │   └── env.ts                # Environment configuration
+│   └── types.ts                  # Application type definitions
+├── routes/
+│   ├── +layout.svelte            # Root layout with auth initialization
+│   ├── +page.svelte              # Landing/login page
+│   └── map/
+│       └── +page.svelte          # Protected map page
+└── app.html                      # HTML template
+```
 
 ### State Management
 
-- **Svelte Stores**: Reactive state management for filters
-- **URL State**: Filter preferences can be persisted in URL
-- **Local Storage**: Optional persistence of user preferences
+- **Auth Store**: Svelte 5 runes-based authentication state
+- **Reactive Loading**: ActivityMap waits for both auth and map style loading
+- **Client-Side Guards**: Route protection without server-side rendering
+- **API Integration**: Centralized service layer with error handling
+
+### Development Features
+
+- **Vite Proxy**: API requests to `/api/*` proxied to backend
+- **OAuth Transform**: Redirect URLs transformed for localhost development
+- **Cookie Handling**: Set-Cookie domain transformed for localhost
+- **Hot Reload**: Instant updates during development
+
+## Data Flow
+
+1. **Page Load**: SvelteKit initializes with auth state check
+2. **Authentication**: OAuth flow or existing JWT cookie validation
+3. **User Data**: API call retrieves user profile and PMTiles URL
+4. **Map Rendering**: Reactive statement triggers when auth and map ready
+5. **Activity Loading**: PMTiles source added with signed CloudFront URLs
 
 ## Configuration
 
 ### Environment Variables
 
-Create a `.env` file for local development:
+Production builds require:
+- `VITE_MAPTILER_API_KEY`: MapTiler API key for terrain tiles
+- `VITE_API_URL`: Backend API URL (optional, defaults to "/api" for proxy)
 
-```env
-PUBLIC_MAPLIBRE_STYLE_URL=https://your-style-url
-PUBLIC_ACTIVITIES_URL=https://your-cloudfront-distribution/activities.pmtiles
-```
+### Map Configuration
 
-### MapLibre Configuration
+Configured in `src/lib/stores/config.ts`:
+- MapTiler terrain and styles
+- Activity type colors and icons
+- Default map center and zoom
+- Responsive behavior
 
-The map is configured in `ActivityMap.svelte` with:
+## API Integration
 
-- **Style**: Protomaps Patchwork style for beautiful base maps
-- **Terrain**: MapTiler terrain tiles for 3D elevation
-- **Projection**: Globe projection for stunning visuals
-- **Controls**: Navigation and scale controls
+### Auto-Generated Client
 
-## Data Format
-
-The application expects PMTiles containing GeoJSON LineString features with these properties:
+The API client is generated from the backend's OpenAPI specification:
 
 ```typescript
-interface ActivityProperties {
-  activity_type: 'Ride' | 'Run' | 'Walk' | 'Hike' | 'AlpineSki' | 'Other';
-  start_date_local: string;  // ISO 8601 format
-  distance: number;          // meters
-  elapsed_time: number;      // seconds
-}
+// Generated types and client
+import { getUserProfile } from '$lib/api';
+import type { UserProfileResponse } from '$lib/api/types.gen';
+
+// Service layer wrapper
+const userData = await ridelinesService.getUser();
 ```
 
-## Styling
+### Authentication Service
 
-### Activity Type Colors
+```typescript
+// Check authentication status
+await authStore.init();
 
-| Activity | Color | Hex |
-|----------|-------|-----|
-| Ride | Blue | `#0066ff` |
-| Run | Green | `#00aa00` |
-| Walk | Orange | `#ff8800` |
-| Hike | Brown | `#aa6600` |
-| AlpineSki | Purple | `#aa00ff` |
-| Other | Gray | `#888888` |
+// Access user data
+const { user, pmtilesUrl } = authStore;
 
-### Responsive Breakpoints
-
-- Mobile: < 768px
-- Tablet: 768px - 1024px
-- Desktop: > 1024px
-
-## Performance Optimization
-
-- **Static Generation**: Pre-rendered HTML for instant loading
-- **Code Splitting**: Automatic code splitting by SvelteKit
-- **Tree Shaking**: Unused code eliminated during build
-- **Compression**: Brotli compression via CloudFront
-- **Caching**: Aggressive caching for static assets
-- **PMTiles**: Efficient tile format with HTTP range requests
-
-## Testing
-
-### Unit Tests (Vitest)
-
-```bash
-npm run test:unit
+// Login flow
+authStore.login('/map');
 ```
-
-Tests cover:
-- Component rendering
-- Store behavior
-- Utility functions
-- Type safety
-
-### E2E Tests (Playwright)
-
-```bash
-npm run test:e2e
-```
-
-Tests cover:
-- Page loading
-- Map initialization
-- Filter interactions
-- Error states
 
 ## Deployment
 
-The application is packaged as a static site and deployed via the Frame infrastructure:
+### Build Process
 
-1. **Build**: GitHub Actions builds the static site
-2. **Package**: Artifacts packaged to GitHub Container Registry
-3. **Deploy**: Frame deploys to S3 + CloudFront
+1. **Type Generation**: OpenAPI types generated during `npm install`
+2. **Static Build**: SvelteKit builds pre-rendered static site
+3. **Container Packaging**: GitHub Actions packages for deployment
+4. **CDN Deployment**: Frame infrastructure deploys to S3/CloudFront
 
-### Build Output
+### GitHub Actions Workflow
 
-The build creates a static site in the `build/` directory:
+- **Test**: Linting, type checking, and test execution (parallel)
+- **Build**: Static site generation with environment variables (parallel)
+- **Publish**: Docker container creation and deployment trigger
 
+### Environment Secrets
+
+Required GitHub secrets:
+- `MAPTILER_API_KEY`: MapTiler API key for terrain data
+- `FRAME_REPO_TOKEN`: Token for triggering infrastructure deployments
+
+## Performance
+
+### Optimization Features
+
+- **Static Generation**: Pre-rendered HTML for instant loading
+- **Declarative Reactivity**: Efficient updates with Svelte 5 runes
+- **PMTiles Protocol**: Range request-based tile loading
+- **CloudFront CDN**: Global edge caching for assets and data
+- **Race Condition Prevention**: Proper async coordination for map loading
+
+### Bundle Analysis
+
+The build outputs client-side bundles with:
+- Code splitting by route and component
+- MapLibre GL JS as the largest dependency (~970KB)
+- Efficient CSS extraction and minification
+
+## Testing
+
+### Unit Tests
+```bash
+npm run test:unit
 ```
-build/
-├── _app/              # JavaScript and CSS bundles
-├── index.html         # Pre-rendered HTML
-└── [other assets]     # Fonts, images, etc.
+- Component behavior and rendering
+- Store state management
+- Utility function logic
+- Type safety validation
+
+### E2E Tests
+```bash
+npm run test:e2e
 ```
+- Authentication flows
+- Map initialization and interaction
+- Filter functionality
+- Error handling scenarios
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Map doesn't load**: Check browser console for CORS or network errors
-2. **Activities not visible**: Verify PMTiles URL is accessible
-3. **Performance issues**: Ensure hardware acceleration is enabled
-4. **Type errors**: Run `npm run check` to validate types
+**Authentication Loop**: Check for proper cookie domain configuration
+```javascript
+// Ensure cookies work on localhost
+document.cookie // Should show ridelines_auth cookie
+```
+
+**Map Loading Errors**: Verify MapTiler API key and terrain access
+```javascript
+// Check browser console for WebGL and network errors
+```
+
+**Type Errors**: Regenerate API types from latest OpenAPI spec
+```bash
+npm run generate-types
+```
+
+**API CORS Issues**: Ensure development proxy is working
+```bash
+# Check proxy configuration in vite.config.ts
+curl http://localhost:5173/api/user # Should proxy to backend
+```
 
 ### Debug Mode
 
-Enable debug logging in the browser console:
+Enable detailed logging:
 ```javascript
-localStorage.debug = 'ridelines:*'
+localStorage.setItem('debug', 'ridelines:*');
 ```
 
 ## Contributing
 
-We welcome contributions! Please:
+### Development Workflow
 
-1. Fork the repository
-2. Create a feature branch
-3. Follow the existing code style
-4. Add tests for new features
-5. Ensure all tests pass
-6. Submit a pull request
+1. Create feature branch from `main`
+2. Make changes with proper TypeScript types
+3. Test locally with `npm run dev`
+4. Run linting and type checking
+5. Write tests for new functionality
+6. Submit PR with clear description
 
-### Code Style
+### Code Standards
 
-- Use Biome for formatting (runs automatically)
-- Follow SvelteKit conventions
-- Maintain TypeScript strict mode
-- Write meaningful commit messages
+- Use Biome for consistent formatting
+- Follow Svelte 5 runes patterns for reactivity  
+- Maintain strict TypeScript configuration
+- Write semantic commit messages
+- Include tests for new features
+
+### Architecture Guidelines
+
+- Keep components focused and composable
+- Use stores for cross-component state
+- Implement proper error boundaries
+- Follow accessibility best practices
+- Optimize for performance and bundle size
 
 ## License
 
-MIT License - see the [LICENSE](../LICENSE) file for details.
+MIT License - see LICENSE file for details.
 
-## Links
+## Related Projects
 
-- [Backend (Drivetrain)](https://github.com/kreed/ridelines-drivetrain/)
-- [Infrastructure (Frame)](https://github.com/kreed/ridelines-frame/)
-- [MapLibre GL JS](https://maplibre.org/)
-- [PMTiles Specification](https://github.com/protomaps/PMTiles)
+- [Ridelines Drivetrain](../drivetrain/) - Rust backend and Lambda functions
+- [Ridelines Frame](../frame/) - Infrastructure as Code with OpenTofu
+- [intervals.icu](https://intervals.icu/) - Training data platform
+- [MapLibre GL JS](https://maplibre.org/) - Open source mapping library
+- [PMTiles](https://github.com/protomaps/PMTiles) - Efficient tile format
