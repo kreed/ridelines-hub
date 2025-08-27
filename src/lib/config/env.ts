@@ -1,7 +1,9 @@
 // Environment configuration with fallbacks
 export const env = {
 	// API configuration
-	API_URL: import.meta.env.VITE_API_URL || "/api",
+	API_URL:
+		import.meta.env.VITE_API_URL ||
+		(import.meta.env.DEV ? "/api" : `https://api.${window.location.hostname}`),
 
 	// MapTiler API key - must be provided via environment variable
 	MAPTILER_API_KEY: import.meta.env.VITE_MAPTILER_API_KEY,
