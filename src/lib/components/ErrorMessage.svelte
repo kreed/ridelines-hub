@@ -1,6 +1,8 @@
 <script lang="ts">
-export let show: boolean = false;
-export let message: string = "";
+let {
+	show = $bindable(false),
+	message = "",
+}: { show?: boolean; message?: string } = $props();
 </script>
 
 {#if show}

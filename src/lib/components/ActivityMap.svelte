@@ -16,18 +16,25 @@ import type {
 import ErrorMessage from "./ErrorMessage.svelte";
 import FilterPanel from "./FilterPanel.svelte";
 
-export let config: Config;
+let { config }: { config: Config } = $props();
 
 let mapContainer: HTMLDivElement;
 let map: maplibregl.Map;
-let errorMessage = "";
-let showError = false;
+let errorMessage = $state("");
+let showError = $state(false);
 
 // Reactive filter state
-let checkedTypes = ["Ride", "Run", "Walk", "Hike", "AlpineSki", "Other"];
+let checkedTypes = $state([
+	"Ride",
+	"Run",
+	"Walk",
+	"Hike",
+	"AlpineSki",
+	"Other",
+]);
 
 // Style management
-let currentMapStyle = config.mapStyles[0]?.url || "";
+let currentMapStyle = $state(config.mapStyles[0]?.url || "");
 
 function setupMapLayers() {
 	try {
@@ -110,12 +117,14 @@ async function initializeMap(): Promise<void> {
 }
 
 // Track if style is loaded
-let styleLoaded = false;
+let styleLoaded = $state(false);
 
 // Reactive statement to add activity source when both style and auth are ready
-$: if (map && styleLoaded && authStore.pmtilesUrl && !authStore.isLoading) {
-	addActivitySourceAndLayers();
-}
+$effect(() => {
+	if (map && styleLoaded && authStore.pmtilesUrl && !authStore.isLoading) {
+		addActivitySourceAndLayers();
+	}
+});
 
 function addActivitySourceAndLayers() {
 	try {
@@ -268,9 +277,11 @@ function showErrorMessage(message: string): void {
 }
 
 // Reactive filter updates
-$: if (map && checkedTypes) {
-	updateMapFilter();
-}
+$effect(() => {
+	if (map && checkedTypes) {
+		updateMapFilter();
+	}
+});
 
 function updateMapFilter(): void {
 	if (!map || !map.isStyleLoaded()) return;

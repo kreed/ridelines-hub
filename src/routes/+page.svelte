@@ -4,8 +4,8 @@ import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import { authStore } from "$lib/stores/auth.svelte.js";
 
-let showError = false;
-let errorMessage = "";
+let showError = $state(false);
+let errorMessage = $state("");
 
 onMount(async () => {
 	// Check for auth errors

@@ -1,11 +1,19 @@
 <script lang="ts">
 import type { FilterableActivityType, MapStyle } from "../types.js";
 
-export let activityTypes: FilterableActivityType[] = [];
-export let checkedTypes: string[] = [];
-export let mapStyles: MapStyle[] = [];
-export let currentStyle: string = "";
-export let onStyleChange: (styleUrl: string) => void;
+let {
+	activityTypes = [],
+	checkedTypes = $bindable([]),
+	mapStyles = [],
+	currentStyle = "",
+	onStyleChange,
+}: {
+	activityTypes?: FilterableActivityType[];
+	checkedTypes?: string[];
+	mapStyles?: MapStyle[];
+	currentStyle?: string;
+	onStyleChange: (styleUrl: string) => void;
+} = $props();
 
 function toggleType(type: string): void {
 	if (checkedTypes.includes(type)) {
@@ -16,7 +24,7 @@ function toggleType(type: string): void {
 }
 
 // Style selector state
-let isStyleSelectorOpen = false;
+let isStyleSelectorOpen = $state(false);
 
 function toggleStyleSelector() {
 	isStyleSelectorOpen = !isStyleSelectorOpen;
@@ -27,14 +35,15 @@ function selectStyle(styleUrl: string) {
 	isStyleSelectorOpen = false;
 }
 
-$: currentStyleData =
-	mapStyles.find((style) => style.url === currentStyle) || mapStyles[0];
+const currentStyleData = $derived(
+	mapStyles.find((style) => style.url === currentStyle) || mapStyles[0],
+);
 </script>
 
 <nav class="control-panel">
     <!-- Style Selector Section -->
     <div class="style-section">
-        <button class="style-button" on:click={toggleStyleSelector} aria-expanded={isStyleSelectorOpen}>
+        <button class="style-button" onclick={toggleStyleSelector} aria-expanded={isStyleSelectorOpen}>
             <span class="style-name">{currentStyleData?.name || 'Style'}</span>
             <svg class="chevron" class:rotated={isStyleSelectorOpen} viewBox="0 0 12 8" fill="none">
                 <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -47,7 +56,7 @@ $: currentStyleData =
                     <button
                         class="style-option"
                         class:selected={style.url === currentStyle}
-                        on:click={() => selectStyle(style.url)}
+                        onclick={() => selectStyle(style.url)}
                     >
                         <span class="style-name">{style.name}</span>
                     </button>
@@ -63,7 +72,7 @@ $: currentStyleData =
                 <input
                     type="checkbox"
                     checked={checkedTypes.includes(activityType)}
-                    on:change={() => toggleType(activityType)}
+                    onchange={() => toggleType(activityType)}
                 />
                 {#if checkedTypes.includes(activityType)}✓{/if}
                 {activityType}

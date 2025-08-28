@@ -1,8 +1,7 @@
-import { writable } from "svelte/store";
 import { env } from "$lib/config/env.js";
 import type { Config } from "../types.js";
 
-export const config = writable<Config>({
+export const config: Config = {
 	mapStyles: [
 		{
 			id: "dataviz-dark",
@@ -31,4 +30,4 @@ export const config = writable<Config>({
 	},
 	defaultCenter: [-98.583, 39.833],
 	defaultZoom: 4,
-});
+};

@@ -11,7 +11,7 @@ onMount(async () => {
 });
 </script>
 
-<ActivityMap config={$config} />
+<ActivityMap {config} />
 
 <svelte:head>
     <title>Ridelines - Activity Map</title>
