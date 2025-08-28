@@ -5,8 +5,13 @@ import type { Config } from "../types.js";
 export const config = writable<Config>({
 	mapStyles: [
 		{
+			id: "dataviz-dark",
+			name: "Dark",
+			url: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${env.MAPTILER_API_KEY}`,
+		},
+		{
 			id: "outdoor-dark",
-			name: "Outdoor Dark",
+			name: "Dark Terrain",
 			url: `https://api.maptiler.com/maps/outdoor-v2-dark/style.json?key=${env.MAPTILER_API_KEY}`,
 		},
 		{
@@ -14,14 +19,7 @@ export const config = writable<Config>({
 			name: "Satellite",
 			url: `https://api.maptiler.com/maps/satellite/style.json?key=${env.MAPTILER_API_KEY}`,
 		},
-		{
-			id: "dataviz-dark",
-			name: "Dataviz Dark",
-			url: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${env.MAPTILER_API_KEY}`,
-		},
 	],
-	// PMTiles URL will be provided dynamically from authenticated API
-	pmtilesUrl: "",
 	activityTypes: ["Ride", "Run", "Walk", "Hike", "AlpineSki"] as const,
 	activityColors: {
 		Ride: "#14affc",

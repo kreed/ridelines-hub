@@ -6,7 +6,6 @@ export interface MapStyle {
 
 export interface Config {
 	mapStyles: MapStyle[];
-	pmtilesUrl: string;
 	activityTypes: ActivityType[];
 	activityColors: Record<string, string>;
 	defaultCenter: [number, number];

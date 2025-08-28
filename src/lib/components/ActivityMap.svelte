@@ -323,6 +323,7 @@ function updateMapFilter(): void {
     .map {
         width: 100%;
         height: 100%;
+        background-color: #000000;
     }
 
     :global(.maplibregl-popup-content) {
