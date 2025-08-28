@@ -1,14 +1,14 @@
 // Environment configuration with fallbacks
+
+import { get } from "svelte/store";
+import { page } from "$app/stores";
+
 export const env = {
 	// API configuration - use getter for lazy evaluation
 	get API_URL() {
 		return (
 			import.meta.env.VITE_API_URL ||
-			(import.meta.env.DEV
-				? "/api"
-				: typeof window !== "undefined"
-					? `https://api.${window.location.hostname}`
-					: "")
+			(import.meta.env.DEV ? "/api" : `https://api.${get(page).url.hostname}`)
 		);
 	},
 

@@ -16,15 +16,16 @@ onMount(async () => {
 		errorMessage = "Authentication failed. Please try again.";
 	}
 
-	// Initialize auth and redirect if already authenticated
+	// Initialize auth but don't auto-redirect
 	await authStore.init();
-	if (authStore.isAuthenticated) {
-		await goto("/map");
-	}
 });
 
 function handleLogin() {
 	authStore.login("/map");
+}
+
+function viewMap() {
+	goto("/map");
 }
 </script>
 
@@ -55,8 +56,10 @@ function handleLogin() {
 				</div>
 			{/if}
 
-			{#if authStore.isLoading}
-				<div class="loading">Checking authentication...</div>
+			{#if authStore.isAuthenticated}
+				<button class="login-button" onclick={viewMap}>
+					View Map
+				</button>
 			{:else}
 				<button class="login-button" onclick={handleLogin}>
 					Login with intervals.icu
