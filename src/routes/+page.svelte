@@ -147,10 +147,6 @@ function viewMap() {
 		box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
 	}
 
-	.loading {
-		font-size: 1.1rem;
-		opacity: 0.8;
-	}
 
 	.error-message {
 		background: rgba(255, 0, 0, 0.2);

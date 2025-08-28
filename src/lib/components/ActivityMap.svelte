@@ -55,7 +55,9 @@ const getLineColor = () => {
 };
 
 // Get popup handler from child component
-let popupHandleClick: ((e: maplibregl.MapLayerMouseEvent) => void) | undefined;
+let popupHandleClick = $state<
+	((e: maplibregl.MapLayerMouseEvent) => void) | undefined
+>(undefined);
 </script>
 
 <div class="map-container">

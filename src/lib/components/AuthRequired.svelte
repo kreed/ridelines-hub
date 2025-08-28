@@ -5,7 +5,7 @@ import { authStore } from "$lib/stores/auth.svelte.js";
 
 let {
 	message = "You must be logged in to view this page.",
-	redirectPath = $page.url.pathname + $page.url.search + $page.url.hash,
+	redirectPath = undefined,
 }: {
 	message?: string;
 	redirectPath?: string;
@@ -22,7 +22,9 @@ onMount(async () => {
 });
 
 function handleLogin() {
-	authStore.login(redirectPath);
+	const finalPath =
+		redirectPath || $page.url.pathname + $page.url.search + $page.url.hash;
+	authStore.login(finalPath);
 }
 </script>
 
