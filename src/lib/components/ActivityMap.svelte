@@ -12,9 +12,9 @@ import {
 } from "svelte-maplibre-gl";
 import { useActivityData } from "$lib/composables/useActivityData.svelte.js";
 import { useActivityFilter } from "$lib/composables/useActivityFilter.svelte.js";
-import { useActivityPopup } from "$lib/composables/useActivityPopup.svelte.js";
 import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
 import type { Config } from "$lib/types.js";
+import ActivityPopup from "./ActivityPopup.svelte";
 import ErrorMessage from "./ErrorMessage.svelte";
 import FilterPanel from "./FilterPanel.svelte";
 
@@ -24,7 +24,6 @@ let { config }: { config: Config } = $props();
 const activityData = useActivityData();
 const mapStyle = useMapStyle(config);
 const activityFilter = useActivityFilter(config);
-const popup = useActivityPopup();
 
 // Error handling state
 let errorMessage = $state("");
@@ -55,15 +54,8 @@ const getLineColor = () => {
 	return colorExpression;
 };
 
-const handleActivityClick = (e: maplibregl.MapLayerMouseEvent) => {
-	if (e.features?.[0]?.properties) {
-		const properties = e.features[0].properties;
-		const popupContent = popup.createPopupContent(properties);
-		// The popup will be handled by the declarative MapLibre component
-		return popupContent;
-	}
-	return null;
-};
+// Get popup handler from child component
+let popupHandleClick: ((e: maplibregl.MapLayerMouseEvent) => void) | undefined;
 </script>
 
 <div class="map-container">
@@ -107,11 +99,24 @@ const handleActivityClick = (e: maplibregl.MapLayerMouseEvent) => {
 						"line-color": getLineColor() as maplibregl.ExpressionSpecification,
 						"line-opacity": 0.8,
 					}}
+				/>
+				<!-- Invisible click target layer with wider lines for easier clicking -->
+				<LineLayer
+					id="activity-lines-clickable"
+					sourceLayer="activities"
+					filter={activityFilter.getMapFilter() as maplibregl.FilterSpecification}
+					paint={{
+						"line-width": ["interpolate", ["linear"], ["zoom"], 10, 8, 16, 15] as maplibregl.ExpressionSpecification,
+						"line-color": "transparent",
+						"line-opacity": 0,
+					}}
 					onmousemove={() => (cursor = "pointer")}
 					onmouseleave={() => (cursor = undefined)}
+					onclick={popupHandleClick}
 				/>
 			</VectorTileSource>
 		{/if}
+		<ActivityPopup bind:handleClick={popupHandleClick} />
 	</MapLibre>
 
 	<FilterPanel
