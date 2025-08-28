@@ -303,7 +303,7 @@ function updateMapFilter(): void {
 
 <div class="map-container">
     <div bind:this={mapContainer} class="map"></div>
-    <FilterPanel 
+    <FilterPanel
         activityTypes={[...config.activityTypes, 'Other'] as FilterableActivityType[]}
         bind:checkedTypes
         mapStyles={config.mapStyles}
@@ -319,39 +319,39 @@ function updateMapFilter(): void {
         width: 100%;
         height: 100%;
     }
-    
+
     .map {
         width: 100%;
         height: 100%;
     }
-    
+
     :global(.maplibregl-popup-content) {
         padding: 15px;
         border-radius: 5px;
     }
-    
+
     :global(.activity-popup) {
         font-family: 'Helvetica Neue', Arial, sans-serif;
         line-height: 1.4;
     }
-    
+
     :global(.activity-popup h3) {
         margin: 0 0 8px 0;
         color: #333;
         font-size: 14px;
         font-weight: 600;
     }
-    
+
     :global(.activity-popup .details) {
         margin: 8px 0;
         font-size: 12px;
         color: #666;
     }
-    
+
     :global(.activity-popup .link) {
         margin-top: 10px;
     }
-    
+
     :global(.activity-popup a) {
         display: inline-block;
         background: #3386c0;
@@ -363,7 +363,7 @@ function updateMapFilter(): void {
         font-weight: 600;
         transition: background-color 0.2s ease;
     }
-    
+
     :global(.activity-popup a:hover) {
         background: #4ea0da;
     }

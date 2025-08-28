@@ -33,7 +33,7 @@ function handleLogin() {
 		<div class="hero-content">
 			<h1>Ridelines</h1>
 			<p class="subtitle">Visualize your intervals.icu activities on beautiful 3D maps</p>
-			
+
 			<div class="features">
 				<div class="feature">
 					<h3>🗺️ 3D Terrain Maps</h3>

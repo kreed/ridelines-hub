@@ -286,7 +286,7 @@ localStorage.setItem('debug', 'ridelines:*');
 ### Code Standards
 
 - Use Biome for consistent formatting
-- Follow Svelte 5 runes patterns for reactivity  
+- Follow Svelte 5 runes patterns for reactivity
 - Maintain strict TypeScript configuration
 - Write semantic commit messages
 - Include tests for new features

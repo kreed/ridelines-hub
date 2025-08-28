@@ -3,7 +3,7 @@ name: Build and Publish Hub
 on:
   push:
     branches: [main]
-    paths-ignore: 
+    paths-ignore:
       - '*.md'
       - '.gitignore'
       - 'LICENSE'

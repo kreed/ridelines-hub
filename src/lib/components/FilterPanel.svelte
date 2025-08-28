@@ -40,11 +40,11 @@ $: currentStyleData =
                 <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </button>
-        
+
         {#if isStyleSelectorOpen}
             <div class="style-dropdown">
                 {#each mapStyles as style}
-                    <button 
+                    <button
                         class="style-option"
                         class:selected={style.url === currentStyle}
                         on:click={() => selectStyle(style.url)}
@@ -86,7 +86,7 @@ $: currentStyleData =
         font-family: 'Helvetica Neue', Arial, sans-serif;
         pointer-events: auto;
     }
-    
+
     @media (max-width: 480px) {
         .control-panel {
             min-width: 140px;
@@ -171,7 +171,7 @@ $: currentStyleData =
     .filter-section {
         border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
-    
+
     .filter-label {
         display: block;
         padding: 10px 12px;
@@ -187,17 +187,17 @@ $: currentStyleData =
         pointer-events: auto;
         user-select: none;
     }
-    
+
     .filter-label:hover,
     .filter-label.checked {
         background-color: #4ea0da;
     }
-    
+
     .filter-label:last-child {
         border-bottom: none;
         border-radius: 0 0 6px 6px;
     }
-    
+
     input {
         display: none;
     }
