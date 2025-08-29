@@ -43,6 +43,7 @@
 		"@svelte-maplibre-gl/pmtiles": "^1.0.1",
 		"maplibre-gl": "^5.7.0",
 		"pmtiles": "^4.3.0",
+		"svelte-clerk": "^0.16.10",
 		"svelte-maplibre-gl": "^1.0.1"
 	}
 }

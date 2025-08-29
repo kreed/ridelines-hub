@@ -1,4 +1,4 @@
-import { env } from "$lib/config/env.js";
+import { PUBLIC_MAPTILER_API_KEY } from "$env/static/public";
 import type { Config } from "$lib/types.js";
 
 export function useMapStyle(config: Config) {
@@ -15,7 +15,7 @@ export function useMapStyle(config: Config) {
 
 	const getTerrainSource = () => ({
 		type: "raster-dem" as const,
-		url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${env.MAPTILER_API_KEY}`,
+		url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${PUBLIC_MAPTILER_API_KEY}`,
 		tileSize: 256,
 	});
 

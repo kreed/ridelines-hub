@@ -10,6 +10,7 @@ export interface Config {
 	activityColors: Record<string, string>;
 	defaultCenter: [number, number];
 	defaultZoom: number;
+	apiUrl: string;
 }
 
 export interface ActivityProperties {

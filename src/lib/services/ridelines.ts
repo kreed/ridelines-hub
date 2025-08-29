@@ -1,3 +1,4 @@
+import { useClerkContext } from "svelte-clerk";
 import type {
 	SyncResponse,
 	SyncStatusResponse,
@@ -6,14 +7,7 @@ import type {
 } from "$lib/api";
 import { getSyncStatus, getUserProfile, triggerSync } from "$lib/api";
 import { createClient } from "$lib/api/client";
-import { env } from "$lib/config/env.js";
-
-// Create API client with proper configuration
-const apiClient = createClient({
-	baseUrl: env.API_URL,
-	credentials: "include" as RequestCredentials,
-	fetch: typeof window !== "undefined" ? fetch.bind(window) : fetch,
-});
+import { config } from "$lib/stores/config.js";
 
 export interface AuthResult {
 	isAuthenticated: boolean;
@@ -25,8 +19,6 @@ export interface AuthResult {
 export interface RidelinesService {
 	// Authentication
 	checkAuthentication(): Promise<AuthResult>;
-	getLoginUrl(redirectPath?: string): string;
-	logout(): void;
 	getUser(): Promise<UserProfileResponse | null>;
 
 	// Sync operations (for future use)
@@ -39,13 +31,34 @@ class RidelinesServiceImpl implements RidelinesService {
 	private cacheExpiry: number = 0;
 
 	/**
+	 * Get authenticated API client with Clerk token
+	 */
+	private async getAuthenticatedClient() {
+		const { session } = useClerkContext();
+		const token = await session?.getToken();
+
+		return createClient({
+			baseUrl: config.apiUrl,
+			headers: token
+				? {
+						Authorization: `Bearer ${token}`,
+					}
+				: undefined,
+			fetch: typeof window !== "undefined" ? fetch.bind(window) : fetch,
+		});
+	}
+
+	/**
 	 * Make API call with standard error handling
 	 */
 	private async makeApiCall<T>(
-		apiCall: () => Promise<{ response?: Response; data?: T }>,
+		apiCall: (
+			client: ReturnType<typeof createClient>,
+		) => Promise<{ response?: Response; data?: T }>,
 	): Promise<T | null> {
 		try {
-			const response = await apiCall();
+			const client = await this.getAuthenticatedClient();
+			const response = await apiCall(client);
 			if (response.response?.ok && response.data) {
 				return response.data;
 			}
@@ -87,50 +100,24 @@ class RidelinesServiceImpl implements RidelinesService {
 	}
 
 	/**
-	 * Generate login URL for OAuth flow
-	 */
-	getLoginUrl(redirectPath = "/"): string {
-		const params = new URLSearchParams();
-		if (redirectPath && redirectPath !== "/") {
-			params.set("redirect_path", redirectPath);
-		}
-
-		const queryString = params.toString();
-		return `${env.API_URL}/auth/login${queryString ? `?${queryString}` : ""}`;
-	}
-
-	/**
-	 * Clear cached authentication state (for logout)
-	 */
-	logout(): void {
-		this.cachedAuthResult = null;
-		this.cacheExpiry = 0;
-
-		// Clear any local storage related to auth
-		if (typeof localStorage !== "undefined") {
-			localStorage.removeItem("ridelines_auth_state");
-		}
-	}
-
-	/**
 	 * Get user profile and PMTiles URL
 	 */
 	async getUser(): Promise<UserProfileResponse | null> {
-		return this.makeApiCall(() => getUserProfile({ client: apiClient }));
+		return this.makeApiCall((client) => getUserProfile({ client }));
 	}
 
 	/**
 	 * Get sync status for authenticated user
 	 */
 	async getSyncStatus(): Promise<SyncStatusResponse | null> {
-		return this.makeApiCall(() => getSyncStatus({ client: apiClient }));
+		return this.makeApiCall((client) => getSyncStatus({ client }));
 	}
 
 	/**
 	 * Trigger activity synchronization
 	 */
 	async triggerSync(): Promise<SyncResponse | null> {
-		return this.makeApiCall(() => triggerSync({ client: apiClient }));
+		return this.makeApiCall((client) => triggerSync({ client }));
 	}
 }
 

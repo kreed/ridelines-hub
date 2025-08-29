@@ -5,8 +5,9 @@ import { config } from "$lib/stores/config.js";
 import "maplibre-gl/dist/maplibre-gl.css";
 </script>
 
-<ActivityMap {config} />
-<AuthRequired />
+<AuthRequired>
+    <ActivityMap {config} />
+</AuthRequired>
 
 <svelte:head>
     <title>Ridelines - Activity Map</title>

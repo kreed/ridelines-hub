@@ -1,27 +1,15 @@
 <script lang="ts">
-import { onMount } from "svelte";
+import { SignedIn, SignedOut, useClerkContext } from "svelte-clerk";
 import { goto } from "$app/navigation";
-import { page } from "$app/stores";
-import { authStore } from "$lib/stores/auth.svelte.js";
 
-let showError = $state(false);
-let errorMessage = $state("");
+const clerkContext = useClerkContext();
 
-onMount(async () => {
-	// Check for auth errors
-	const urlParams = new URLSearchParams($page.url.search);
-	const error = urlParams.get("error");
-	if (error === "auth_failed") {
-		showError = true;
-		errorMessage = "Authentication failed. Please try again.";
-	}
-
-	// Initialize auth but don't auto-redirect
-	await authStore.init();
-});
-
-function handleLogin() {
-	authStore.login("/map");
+function handleIntervalsSignup() {
+	clerkContext.clerk?.client?.signUp.authenticateWithRedirect({
+		strategy: "oauth_custom_intervals_icu",
+		redirectUrl: `${window.location.origin}/map`,
+		redirectUrlComplete: `${window.location.origin}/map`,
+	});
 }
 
 function viewMap() {
@@ -50,21 +38,20 @@ function viewMap() {
 				</div>
 			</div>
 
-			{#if showError}
-				<div class="error-message">
-					{errorMessage}
-				</div>
-			{/if}
-
-			{#if authStore.isAuthenticated}
-				<button class="login-button" onclick={viewMap}>
+			<SignedIn>
+				<button class="login-button primary" onclick={viewMap}>
 					View Map
 				</button>
-			{:else}
-				<button class="login-button" onclick={handleLogin}>
-					Login with intervals.icu
+			</SignedIn>
+
+			<SignedOut>
+				<button
+					class="login-button primary"
+					onclick={handleIntervalsSignup}
+				>
+					Connect with Intervals.icu
 				</button>
-			{/if}
+			</SignedOut>
 		</div>
 	</div>
 </main>
@@ -147,16 +134,6 @@ function viewMap() {
 		box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
 	}
 
-
-	.error-message {
-		background: rgba(255, 0, 0, 0.2);
-		color: white;
-		padding: 1rem;
-		border-radius: 8px;
-		margin-bottom: 2rem;
-		border: 1px solid rgba(255, 0, 0, 0.3);
-	}
-
 	@media (max-width: 768px) {
 		.hero-content h1 {
 			font-size: 2.5rem;
@@ -164,6 +141,10 @@ function viewMap() {
 
 		.features {
 			grid-template-columns: 1fr;
+		}
+
+		.login-button {
+			width: 100%;
 		}
 	}
 </style>

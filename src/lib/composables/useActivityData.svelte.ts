@@ -1,36 +1,49 @@
-import { authStore } from "$lib/stores/auth.svelte.js";
+import { useClerkContext } from "svelte-clerk";
+import { ridelinesService } from "$lib/services/ridelines.js";
 
 export function useActivityData() {
 	let pmtilesUrl = $state<string | null>(null);
-	let isDataReady = $state(false);
+	let isLoading = $state(false);
 
-	// Reactive data loading based on auth state
+	const { user } = useClerkContext();
+	const isSignedIn = $derived(!!user);
+
 	$effect(() => {
-		if (authStore.pmtilesUrl && !authStore.isLoading) {
-			pmtilesUrl = authStore.pmtilesUrl;
-			isDataReady = true;
-		} else {
+		if (!isSignedIn) {
 			pmtilesUrl = null;
-			isDataReady = false;
+			return;
 		}
+
+		isLoading = true;
+		ridelinesService
+			.getUser()
+			.then((data) => {
+				pmtilesUrl = data?.pmtiles_url || null;
+			})
+			.catch(() => {
+				pmtilesUrl = null;
+			})
+			.finally(() => {
+				isLoading = false;
+			});
 	});
-
-	const getVectorSource = () => {
-		if (!pmtilesUrl) return null;
-
-		return {
-			type: "vector" as const,
-			url: `pmtiles://${pmtilesUrl}`,
-		};
-	};
 
 	return {
 		get pmtilesUrl() {
 			return pmtilesUrl;
 		},
 		get isDataReady() {
-			return isDataReady;
+			return !!pmtilesUrl && !isLoading;
 		},
-		getVectorSource,
+		get isLoading() {
+			return isLoading;
+		},
+		getVectorSource: () =>
+			pmtilesUrl
+				? {
+						type: "vector" as const,
+						url: `pmtiles://${pmtilesUrl}`,
+					}
+				: null,
 	};
 }
