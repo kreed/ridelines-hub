@@ -2,13 +2,13 @@
 import { PMTilesProtocol } from "@svelte-maplibre-gl/pmtiles";
 import maplibregl from "maplibre-gl";
 import {
-	LineLayer,
-	MapLibre,
-	NavigationControl,
-	Projection,
-	RasterDEMTileSource,
-	Terrain,
-	VectorTileSource,
+  LineLayer,
+  MapLibre,
+  NavigationControl,
+  Projection,
+  RasterDEMTileSource,
+  Terrain,
+  VectorTileSource,
 } from "svelte-maplibre-gl";
 import { useActivityData } from "$lib/composables/useActivityData.svelte.js";
 import { useActivityFilter } from "$lib/composables/useActivityFilter.svelte.js";
@@ -33,31 +33,29 @@ let showError = $state(false);
 let cursor = $state<string | undefined>(undefined);
 
 function showErrorMessage(message: string): void {
-	errorMessage = message;
-	showError = true;
-	console.error(message);
+  errorMessage = message;
+  showError = true;
+  console.error(message);
 }
 
 // Activity line color expression
 const getLineColor = () => {
-	const colorExpression = ["match", ["get", "type"]];
+  const colorExpression = ["match", ["get", "type"]];
 
-	// Add color mappings for each activity type
-	Object.entries(config.activityColors).forEach(([type, color]) => {
-		if (type !== "default") {
-			colorExpression.push(type, color);
-		}
-	});
+  // Add color mappings for each activity type
+  Object.entries(config.activityColors).forEach(([type, color]) => {
+    if (type !== "default") {
+      colorExpression.push(type, color);
+    }
+  });
 
-	// Add default color
-	colorExpression.push(config.activityColors.default);
-	return colorExpression;
+  // Add default color
+  colorExpression.push(config.activityColors.default);
+  return colorExpression;
 };
 
 // Get popup handler from child component
-let popupHandleClick = $state<
-	((e: maplibregl.MapLayerMouseEvent) => void) | undefined
->(undefined);
+let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | undefined>(undefined);
 </script>
 
 <div class="map-container">

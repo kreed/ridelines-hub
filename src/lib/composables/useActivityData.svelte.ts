@@ -7,45 +7,45 @@ type RouterOutputs = inferRouterOutputs<RootRouter>;
 type UserData = RouterOutputs["user"];
 
 export function useActivityData() {
-	const { user } = useClerkContext();
-	const isSignedIn = $derived(!!user);
+  const { user } = useClerkContext();
+  const isSignedIn = $derived(!!user);
 
-	let data = $state<UserData | null>(null);
-	let isLoading = $state(false);
+  let data = $state<UserData | null>(null);
+  let isLoading = $state(false);
 
-	$effect(() => {
-		if (isSignedIn) {
-			isLoading = true;
-			trpc.user
-				.query()
-				.then((result) => {
-					data = result;
-					isLoading = false;
-				})
-				.catch(() => {
-					isLoading = false;
-				});
-		}
-	});
+  $effect(() => {
+    if (isSignedIn) {
+      isLoading = true;
+      trpc.user
+        .query()
+        .then((result) => {
+          data = result;
+          isLoading = false;
+        })
+        .catch(() => {
+          isLoading = false;
+        });
+    }
+  });
 
-	const pmtilesUrl = $derived(data?.pmtiles_url || null);
+  const pmtilesUrl = $derived(data?.pmtiles_url || null);
 
-	return {
-		get pmtilesUrl() {
-			return pmtilesUrl;
-		},
-		get isDataReady() {
-			return !!pmtilesUrl && !isLoading;
-		},
-		get isLoading() {
-			return isLoading;
-		},
-		getVectorSource: () =>
-			pmtilesUrl
-				? {
-						type: "vector" as const,
-						url: `pmtiles://${pmtilesUrl}`,
-					}
-				: null,
-	};
+  return {
+    get pmtilesUrl() {
+      return pmtilesUrl;
+    },
+    get isDataReady() {
+      return !!pmtilesUrl && !isLoading;
+    },
+    get isLoading() {
+      return isLoading;
+    },
+    getVectorSource: () =>
+      pmtilesUrl
+        ? {
+            type: "vector" as const,
+            url: `pmtiles://${pmtilesUrl}`,
+          }
+        : null,
+  };
 }

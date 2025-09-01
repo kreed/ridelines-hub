@@ -2,42 +2,40 @@
 import type { FilterableActivityType, MapStyle } from "../types.js";
 
 let {
-	activityTypes = [],
-	checkedTypes = $bindable([]),
-	mapStyles = [],
-	currentStyle = "",
-	onStyleChange,
+  activityTypes = [],
+  checkedTypes = $bindable([]),
+  mapStyles = [],
+  currentStyle = "",
+  onStyleChange,
 }: {
-	activityTypes?: FilterableActivityType[];
-	checkedTypes?: string[];
-	mapStyles?: MapStyle[];
-	currentStyle?: string;
-	onStyleChange: (styleUrl: string) => void;
+  activityTypes?: FilterableActivityType[];
+  checkedTypes?: string[];
+  mapStyles?: MapStyle[];
+  currentStyle?: string;
+  onStyleChange: (styleUrl: string) => void;
 } = $props();
 
 function toggleType(type: string): void {
-	if (checkedTypes.includes(type)) {
-		checkedTypes = checkedTypes.filter((t) => t !== type);
-	} else {
-		checkedTypes = [...checkedTypes, type];
-	}
+  if (checkedTypes.includes(type)) {
+    checkedTypes = checkedTypes.filter((t) => t !== type);
+  } else {
+    checkedTypes = [...checkedTypes, type];
+  }
 }
 
 // Style selector state
 let isStyleSelectorOpen = $state(false);
 
 function toggleStyleSelector() {
-	isStyleSelectorOpen = !isStyleSelectorOpen;
+  isStyleSelectorOpen = !isStyleSelectorOpen;
 }
 
 function selectStyle(styleUrl: string) {
-	onStyleChange(styleUrl);
-	isStyleSelectorOpen = false;
+  onStyleChange(styleUrl);
+  isStyleSelectorOpen = false;
 }
 
-const currentStyleData = $derived(
-	mapStyles.find((style) => style.url === currentStyle) || mapStyles[0],
-);
+const currentStyleData = $derived(mapStyles.find((style) => style.url === currentStyle) || mapStyles[0]);
 </script>
 
 <nav class="control-panel">

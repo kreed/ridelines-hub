@@ -4,19 +4,19 @@ import { useClerkContext } from "svelte-clerk";
 
 // Create basic tRPC client
 export const trpc = createTRPCClient<RootRouter>({
-	links: [
-		httpBatchLink({
-			url: `/trpc`,
-			async headers() {
-				const { session } = useClerkContext();
-				const token = await session?.getToken();
+  links: [
+    httpBatchLink({
+      url: `/trpc`,
+      async headers() {
+        const { session } = useClerkContext();
+        const token = await session?.getToken();
 
-				return token
-					? {
-							Authorization: `Bearer ${token}`,
-						}
-					: {};
-			},
-		}),
-	],
+        return token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {};
+      },
+    }),
+  ],
 });

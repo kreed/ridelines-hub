@@ -4,11 +4,9 @@ import { Popup } from "svelte-maplibre-gl";
 import type { ActivityProperties } from "$lib/types.js";
 
 let {
-	handleClick = $bindable<
-		((e: maplibregl.MapLayerMouseEvent) => void) | undefined
-	>(),
+  handleClick = $bindable<((e: maplibregl.MapLayerMouseEvent) => void) | undefined>(),
 }: {
-	handleClick?: ((e: maplibregl.MapLayerMouseEvent) => void) | undefined;
+  handleClick?: ((e: maplibregl.MapLayerMouseEvent) => void) | undefined;
 } = $props();
 
 // Popup state
@@ -18,37 +16,37 @@ let properties = $state<ActivityProperties | null>(null);
 
 // Set the click handler after component initialization
 handleClick = (e: maplibregl.MapLayerMouseEvent) => {
-	if (e.features?.[0]?.properties) {
-		properties = e.features[0].properties as ActivityProperties;
-		lngLat = e.lngLat;
-		isOpen = true;
-	}
+  if (e.features?.[0]?.properties) {
+    properties = e.features[0].properties as ActivityProperties;
+    lngLat = e.lngLat;
+    isOpen = true;
+  }
 };
 
 // Format helpers
 const formatDistance = (meters: number) => ({
-	km: (meters / 1000).toFixed(1),
-	mi: (meters * 0.000621371).toFixed(1),
+  km: (meters / 1000).toFixed(1),
+  mi: (meters * 0.000621371).toFixed(1),
 });
 
 const formatElevation = (meters: number) => ({
-	m: Math.round(meters || 0),
-	ft: Math.round((meters || 0) * 3.28084),
+  m: Math.round(meters || 0),
+  ft: Math.round((meters || 0) * 3.28084),
 });
 
 const formatTime = (seconds: number): string => {
-	const hours = Math.floor(seconds / 3600);
-	const minutes = Math.floor((seconds % 3600) / 60);
-	return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 
 const formatDate = (dateStr: string): string => {
-	if (!dateStr) return "";
-	try {
-		return new Date(dateStr).toLocaleDateString();
-	} catch {
-		return dateStr;
-	}
+  if (!dateStr) return "";
+  try {
+    return new Date(dateStr).toLocaleDateString();
+  } catch {
+    return dateStr;
+  }
 };
 </script>
 

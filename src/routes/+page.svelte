@@ -5,15 +5,15 @@ import { goto } from "$app/navigation";
 const clerkContext = useClerkContext();
 
 function handleIntervalsSignup() {
-	clerkContext.clerk?.client?.signUp.authenticateWithRedirect({
-		strategy: "oauth_custom_intervals_icu",
-		redirectUrl: `${window.location.origin}/map`,
-		redirectUrlComplete: `${window.location.origin}/map`,
-	});
+  clerkContext.clerk?.client?.signUp.authenticateWithRedirect({
+    strategy: "oauth_custom_intervals_icu",
+    redirectUrl: `${window.location.origin}/map`,
+    redirectUrlComplete: `${window.location.origin}/map`,
+  });
 }
 
 function viewMap() {
-	goto("/map");
+  goto("/map");
 }
 </script>
 

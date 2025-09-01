@@ -1,8 +1,5 @@
 <script lang="ts">
-let {
-	show = $bindable(false),
-	message = "",
-}: { show?: boolean; message?: string } = $props();
+let { show = $bindable(false), message = "" }: { show?: boolean; message?: string } = $props();
 </script>
 
 {#if show}
