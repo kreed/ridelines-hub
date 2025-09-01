@@ -22,6 +22,8 @@ permissions:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: kreed/ridelines-hub
+  PUBLIC_MAPTILER_API_KEY: ${{ secrets.MAPTILER_API_KEY }}
+  PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
 jobs:
   test:
@@ -77,8 +79,6 @@ jobs:
 
       - name: Build application
         run: npm run build
-        env:
-          VITE_MAPTILER_API_KEY: ${{ secrets.MAPTILER_API_KEY }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
