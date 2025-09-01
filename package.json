@@ -1,5 +1,5 @@
 {
-	"name": "ridelines-hub",
+	"name": "@kreed/ridelines-hub",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
@@ -7,7 +7,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"prepare": "svelte-kit sync && npm run generate-types || echo ''",
+		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "biome check --write",
@@ -15,12 +15,11 @@
 		"posttest": "npm run lint",
 		"test:unit": "vitest",
 		"test": "echo skip tests",
-		"test:e2e": "playwright test",
-		"generate-types": "openapi-ts -i https://raw.githubusercontent.com/kreed/ridelines-drivetrain/refs/heads/main/openapi/ridelines-api.yaml -o src/lib/api -c @hey-api/client-fetch"
+		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",
-		"@hey-api/openapi-ts": "^0.81.1",
+		"@kreed/ridelines-chainring": "^1.0.0-20250901003614",
 		"@playwright/test": "^1.55.0",
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/adapter-static": "^3.0.9",
@@ -41,6 +40,7 @@
 	},
 	"dependencies": {
 		"@svelte-maplibre-gl/pmtiles": "^1.0.1",
+		"@trpc/client": "^11.5.0",
 		"maplibre-gl": "^5.7.0",
 		"pmtiles": "^4.3.0",
 		"svelte-clerk": "^0.16.10",

@@ -1,32 +1,34 @@
+import type { RootRouter } from "@kreed/ridelines-chainring";
+import type { inferRouterOutputs } from "@trpc/server";
 import { useClerkContext } from "svelte-clerk";
-import { ridelinesService } from "$lib/services/ridelines.js";
+import { trpc } from "$lib/utils/trpc";
+
+type RouterOutputs = inferRouterOutputs<RootRouter>;
+type UserData = RouterOutputs["user"];
 
 export function useActivityData() {
-	let pmtilesUrl = $state<string | null>(null);
-	let isLoading = $state(false);
-
 	const { user } = useClerkContext();
 	const isSignedIn = $derived(!!user);
 
-	$effect(() => {
-		if (!isSignedIn) {
-			pmtilesUrl = null;
-			return;
-		}
+	let data = $state<UserData | null>(null);
+	let isLoading = $state(false);
 
-		isLoading = true;
-		ridelinesService
-			.getUser()
-			.then((data) => {
-				pmtilesUrl = data?.pmtiles_url || null;
-			})
-			.catch(() => {
-				pmtilesUrl = null;
-			})
-			.finally(() => {
-				isLoading = false;
-			});
+	$effect(() => {
+		if (isSignedIn) {
+			isLoading = true;
+			trpc.user
+				.query()
+				.then((result) => {
+					data = result;
+					isLoading = false;
+				})
+				.catch(() => {
+					isLoading = false;
+				});
+		}
 	});
+
+	const pmtilesUrl = $derived(data?.pmtiles_url || null);
 
 	return {
 		get pmtilesUrl() {
