@@ -19,10 +19,10 @@ Ridelines Hub is a high-performance web application that transforms your GPS act
 ## Technology Stack
 
 - **Framework**: SvelteKit 2.0 with TypeScript and static adapter
-- **Authentication**: intervals.icu OAuth 2.0 with JWT cookies
+- **Authentication**: Clerk authentication with JWT validation
 - **Mapping**: MapLibre GL JS with PMTiles protocol and MapTiler terrain
 - **State Management**: Svelte 5 runes for reactive state
-- **API Client**: Auto-generated TypeScript client from OpenAPI specification
+- **API Client**: tRPC client for type-safe API communication
 - **Code Quality**: Biome for linting and formatting
 - **Testing**: Vitest (unit) and Playwright (E2E)
 - **Build**: Vite with proxy configuration for development
@@ -55,12 +55,7 @@ Ridelines Hub is a high-performance web application that transforms your GPS act
    ```bash
    npm run dev
    ```
-   Visit `http://localhost:5173` - the Vite proxy handles API calls
-
-4. **Generate API types** (automatic):
-   ```bash
-   npm run generate-types
-   ```
+   Visit `http://localhost:5173` - the Vite proxy handles API calls to chainring backend
 
 ### Available Scripts
 
@@ -74,31 +69,30 @@ Ridelines Hub is a high-performance web application that transforms your GPS act
 | `npm run format` | Code formatting with Biome |
 | `npm run test:unit` | Vitest unit tests |
 | `npm run test:e2e` | Playwright E2E tests |
-| `npm run generate-types` | Generate API types from OpenAPI spec |
 
 ## Architecture
 
 ### Authentication Flow
 
 1. **Landing Page**: Unauthenticated users see login prompt
-2. **OAuth Redirect**: Login redirects to intervals.icu OAuth
-3. **Callback Handling**: API processes OAuth callback and sets JWT cookie
-4. **Protected Routes**: `/map` route requires authentication
-5. **API Requests**: All API calls include authentication cookie
+2. **Clerk Authentication**: Login handled by Clerk with secure JWT tokens
+3. **Protected Routes**: `/map` route requires authentication
+4. **API Requests**: tRPC client handles authenticated requests to chainring backend
+5. **intervals.icu Integration**: Optional OAuth flow for activity data access
 
 ### Component Structure
 
 ```
 src/
 ├── lib/
-│   ├── api/                    # Auto-generated API client and types
+│   ├── api/                    # tRPC client and type definitions
 │   ├── components/
 │   │   ├── ActivityMap.svelte     # Main 3D map with reactive data loading
 │   │   ├── FilterPanel.svelte     # Activity type filtering
 │   │   ├── ErrorMessage.svelte    # Error display component
 │   │   └── icons/                 # Activity type SVG icons
 │   ├── services/
-│   │   └── ridelines.ts          # API service with authentication
+│   │   └── ridelines.ts          # tRPC service with authentication
 │   ├── stores/
 │   │   ├── auth.svelte.ts        # Authentication state (Svelte 5 runes)
 │   │   └── config.ts             # Application configuration
@@ -120,7 +114,7 @@ src/
 - **Auth Store**: Svelte 5 runes-based authentication state
 - **Reactive Loading**: ActivityMap waits for both auth and map style loading
 - **Client-Side Guards**: Route protection without server-side rendering
-- **API Integration**: Centralized service layer with error handling
+- **tRPC Integration**: Type-safe API calls with end-to-end TypeScript inference
 
 ### Development Features
 
@@ -132,10 +126,10 @@ src/
 ## Data Flow
 
 1. **Page Load**: SvelteKit initializes with auth state check
-2. **Authentication**: OAuth flow or existing JWT cookie validation
-3. **User Data**: API call retrieves user profile and PMTiles URL
+2. **Authentication**: Clerk handles user authentication with JWT tokens
+3. **User Data**: tRPC call retrieves user profile and PMTiles URL
 4. **Map Rendering**: Reactive statement triggers when auth and map ready
-5. **Activity Loading**: PMTiles source added with signed CloudFront URLs
+5. **Activity Loading**: PMTiles source added with presigned URLs from chainring
 
 ## Configuration
 
@@ -155,17 +149,17 @@ Configured in `src/lib/stores/config.ts`:
 
 ## API Integration
 
-### Auto-Generated Client
+### tRPC Client
 
-The API client is generated from the backend's OpenAPI specification:
+The API client uses tRPC for end-to-end type safety:
 
 ```typescript
-// Generated types and client
-import { getUserProfile } from '$lib/api';
-import type { UserProfileResponse } from '$lib/api/types.gen';
+// tRPC client with full type inference
+import { trpc } from '$lib/api/trpc';
 
-// Service layer wrapper
-const userData = await ridelinesService.getUser();
+// Type-safe API calls
+const userData = await trpc.user.getProfile.query();
+const pmtilesUrl = await trpc.user.getPmtilesUrl.query();
 ```
 
 ### Authentication Service
@@ -185,7 +179,7 @@ authStore.login('/map');
 
 ### Build Process
 
-1. **Type Generation**: OpenAPI types generated during `npm install`
+1. **Type Generation**: tRPC types inferred from chainring backend
 2. **Static Build**: SvelteKit builds pre-rendered static site
 3. **Container Packaging**: GitHub Actions packages for deployment
 4. **CDN Deployment**: Frame infrastructure deploys to S3/CloudFront
@@ -201,6 +195,7 @@ authStore.login('/map');
 Required GitHub secrets:
 - `MAPTILER_API_KEY`: MapTiler API key for terrain data
 - `FRAME_REPO_TOKEN`: Token for triggering infrastructure deployments
+- `CLERK_PUBLISHABLE_KEY`: Clerk publishable key for authentication
 
 ## Performance
 
@@ -254,9 +249,10 @@ document.cookie // Should show ridelines_auth cookie
 // Check browser console for WebGL and network errors
 ```
 
-**Type Errors**: Regenerate API types from latest OpenAPI spec
+**Type Errors**: Ensure chainring backend types are up to date
 ```bash
-npm run generate-types
+# Types are automatically inferred from tRPC backend
+npm run type-check
 ```
 
 **API CORS Issues**: Ensure development proxy is working
@@ -305,8 +301,9 @@ MIT License - see LICENSE file for details.
 
 ## Related Projects
 
-- [Ridelines Drivetrain](../drivetrain/) - Rust backend and Lambda functions
-- [Ridelines Frame](../frame/) - Infrastructure as Code with OpenTofu
+- **Backend API (Chainring)**: [ridelines-chainring](https://github.com/kreed/ridelines-chainring)
+- **Backend Workflow (Drivetrain)**: [ridelines-drivetrain](https://github.com/kreed/ridelines-drivetrain)
+- **Infrastructure (Frame)**: [ridelines-frame](https://github.com/kreed/ridelines-frame)
 - [intervals.icu](https://intervals.icu/) - Training data platform
 - [MapLibre GL JS](https://maplibre.org/) - Open source mapping library
 - [PMTiles](https://github.com/protomaps/PMTiles) - Efficient tile format
