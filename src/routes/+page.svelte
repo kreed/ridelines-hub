@@ -7,7 +7,7 @@ const clerkContext = useClerkContext();
 function handleIntervalsSignup() {
   clerkContext.clerk?.client?.signUp.authenticateWithRedirect({
     strategy: "oauth_custom_intervals_icu",
-    redirectUrl: `${window.location.origin}/map`,
+    redirectUrl: `${window.location.origin}/oauth/callback`,
     redirectUrlComplete: `${window.location.origin}/map`,
   });
 }
