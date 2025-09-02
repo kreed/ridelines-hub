@@ -1,52 +1,25 @@
-// @ts-nocheck
-import type { IncomingMessage } from "node:http";
 import { sveltekit } from "@sveltejs/kit/vite";
 import tailwindcss from "@tailwindcss/vite";
-// / <reference types="vitest/config" />
-import { defineConfig } from "vite";
+import { defineConfig as defineViteConfig, mergeConfig } from "vite";
+import { defineConfig as defineVitestConfig } from "vitest/config";
 
-export default defineConfig({
+const viteConfig = defineViteConfig({
   plugins: [tailwindcss(), sveltekit()],
   build: {
     sourcemap: true,
   },
   server: {
     proxy: {
-      "/api": {
-        target: "https://api.dev.ridelines.xyz",
+      "/trpc": {
+        target: "https://dev.ridelines.xyz",
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-        configure: (proxy) => {
-          proxy.on("proxyRes", (proxyRes: IncomingMessage, req: IncomingMessage) => {
-            const devServerUrl = `http://${req.headers.host}`;
-
-            // Transform OAuth redirects to use dev server
-            if (proxyRes.headers.location) {
-              const location = proxyRes.headers.location;
-              const localCallback = encodeURIComponent(`${devServerUrl}/api/auth/callback`);
-              const originalCallback = encodeURIComponent("https://api.dev.ridelines.xyz/auth/callback");
-
-              const transformedLocation = location
-                .replace(`redirect_uri=${originalCallback}`, `redirect_uri=${localCallback}`)
-                .replace(/https:\/\/[^.]*\.ridelines\.xyz/g, devServerUrl);
-
-              if (transformedLocation !== location) {
-                proxyRes.headers.location = transformedLocation;
-              }
-            }
-
-            // Transform Set-Cookie domain for localhost
-            if (proxyRes.headers["set-cookie"]) {
-              proxyRes.headers["set-cookie"] = proxyRes.headers["set-cookie"].map((cookie: string) =>
-                cookie.replace(/Domain=[^;]+/gi, "Domain=localhost"),
-              );
-            }
-          });
-        },
       },
     },
   },
+});
+
+const vitestConfig = defineVitestConfig({
   test: {
     expect: { requireAssertions: true },
     projects: [
@@ -77,3 +50,5 @@ export default defineConfig({
     ],
   },
 });
+
+export default mergeConfig(viteConfig, vitestConfig);
