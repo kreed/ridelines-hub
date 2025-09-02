@@ -1,6 +1,8 @@
 <script lang="ts">
 import { PMTilesProtocol } from "@svelte-maplibre-gl/pmtiles";
+import { createQuery } from "@tanstack/svelte-query";
 import maplibregl from "maplibre-gl";
+import { useClerkContext } from "svelte-clerk";
 import {
   LineLayer,
   MapLibre,
@@ -10,33 +12,45 @@ import {
   Terrain,
   VectorTileSource,
 } from "svelte-maplibre-gl";
-import { useActivityData } from "$lib/composables/useActivityData.svelte.js";
 import { useActivityFilter } from "$lib/composables/useActivityFilter.svelte.js";
 import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
 import type { Config } from "$lib/types.js";
+import { createClient } from "$lib/utils/trpc";
 import ActivityPopup from "./ActivityPopup.svelte";
 import ErrorMessage from "./ErrorMessage.svelte";
 import FilterPanel from "./FilterPanel.svelte";
 
 let { config }: { config: Config } = $props();
 
-// Use composables
-const activityData = useActivityData();
+// Auth + tRPC client
+const clerk = useClerkContext();
+const trpc = createClient(async () => await clerk.session?.getToken());
+
+// Query user info (provides PMTiles URL)
+const userQuery = createQuery(() => ({
+  queryKey: ["user", clerk.user?.id],
+  queryFn: () => trpc.user.query(),
+  enabled: !!clerk.user,
+  staleTime: 60_000,
+}));
+
+const pmtilesUrl = $derived(userQuery.data?.pmtiles_url ?? null);
 const mapStyle = useMapStyle(config);
 const activityFilter = useActivityFilter(config);
 
 // Error handling state
 let errorMessage = $state("");
-let showError = $state(false);
 
 // Cursor state for hover effects
 let cursor = $state<string | undefined>(undefined);
 
-function showErrorMessage(message: string): void {
-  errorMessage = message;
-  showError = true;
-  console.error(message);
-}
+// Surface query errors
+$effect(() => {
+  if (userQuery.isError) {
+    errorMessage = "Failed to load activity data.";
+    console.error(errorMessage, userQuery.error);
+  }
+});
 
 // Activity line color expression
 const getLineColor = () => {
@@ -83,11 +97,11 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		/>
 		<Terrain source="terrain" exaggeration={1.5} />
 
-		{#if activityData.isDataReady && activityData.getVectorSource()}
+		{#if pmtilesUrl}
 			<!-- Activity Data Source -->
 			<VectorTileSource
 				id="activities"
-				{...activityData.getVectorSource()}
+				url={`pmtiles://${pmtilesUrl}`}
 			>
 				<!-- Activity Lines Layer -->
 				<LineLayer
@@ -127,7 +141,7 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		onStyleChange={mapStyle.changeStyle}
 	/>
 
-	<ErrorMessage bind:show={showError} message={errorMessage} />
+	<ErrorMessage show={!!errorMessage} message={errorMessage} />
 </div>
 
 <style>

@@ -1,6 +1,8 @@
+// @ts-nocheck
 import type { IncomingMessage } from "node:http";
 import { sveltekit } from "@sveltejs/kit/vite";
 import tailwindcss from "@tailwindcss/vite";
+// / <reference types="vitest/config" />
 import { defineConfig } from "vite";
 
 export default defineConfig({
