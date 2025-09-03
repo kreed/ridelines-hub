@@ -1,20 +1,9 @@
 import type { RootRouter } from "@kreed/ridelines-chainring";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 
-/**
- * Create a tRPC client without touching Svelte context.
- * Pass a `getToken` function from inside a component (e.g., via Clerk context).
- */
-export function createClient(getToken?: () => Promise<string | null | undefined>) {
-  return createTRPCClient<RootRouter>({
-    links: [
-      httpBatchLink({
-        url: `/trpc`,
-        async headers() {
-          const token = (await getToken?.()) ?? null;
-          return token ? { Authorization: `Bearer ${token}` } : {};
-        },
-      }),
-    ],
-  });
-}
+// Singleton tRPC client. Cloudfront will extract the session cookie
+// and use it as the Authorization header passed to Chainring, so there
+// is no need to attach the header here.
+export const trpc = createTRPCClient<RootRouter>({
+  links: [httpBatchLink({ url: `/trpc` })],
+});

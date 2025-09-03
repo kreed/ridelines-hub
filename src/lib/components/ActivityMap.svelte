@@ -15,26 +15,23 @@ import {
 import { useActivityFilter } from "$lib/composables/useActivityFilter.svelte.js";
 import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
 import type { Config } from "$lib/types.js";
-import { createClient } from "$lib/utils/trpc";
+import { trpc } from "$lib/utils/trpc";
 import ActivityPopup from "./ActivityPopup.svelte";
 import ErrorMessage from "./ErrorMessage.svelte";
 import FilterPanel from "./FilterPanel.svelte";
 
 let { config }: { config: Config } = $props();
 
-// Auth + tRPC client
 const clerk = useClerkContext();
-const trpc = createClient(async () => await clerk.session?.getToken());
 
 // Query user info (provides PMTiles URL)
 const userQuery = createQuery(() => ({
-  queryKey: ["user", clerk.user?.id],
-  queryFn: () => trpc.user.query(),
-  enabled: !!clerk.user,
+  queryKey: ["user.pmtiles", clerk.user?.id],
+  queryFn: () => trpc.user.pmtiles.query(),
   staleTime: 60_000,
 }));
 
-const pmtilesUrl = $derived(userQuery.data?.pmtiles_url ?? null);
+const pmtilesUrl = $derived(userQuery.data ?? null);
 const mapStyle = useMapStyle(config);
 const activityFilter = useActivityFilter(config);
 
