@@ -1,6 +1,9 @@
 <script lang="ts">
+import { Map as MapIcon, Navigation, RefreshCw, Zap } from "@lucide/svelte";
 import { SignedIn, SignedOut, useClerkContext } from "svelte-clerk";
 import { goto } from "$app/navigation";
+import { Button } from "$lib/components/ui/button";
+import * as Card from "$lib/components/ui/card";
 
 const clerkContext = useClerkContext();
 
@@ -17,134 +20,78 @@ function viewMap() {
 }
 </script>
 
-<main class="landing-page">
-	<div class="hero">
-		<div class="hero-content">
-			<h1>Ridelines</h1>
-			<p class="subtitle">Visualize your intervals.icu activities on beautiful 3D maps</p>
+<main class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-8">
+	<div class="text-center max-w-4xl text-white">
+		<div class="space-y-8">
+			<h1 class="text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">ridelines.xyz</h1>
+			<p class="text-xl md:text-2xl opacity-90">Visualize all your intervals.icu activities on one map</p>
 
-			<div class="features">
-				<div class="feature">
-					<h3>🗺️ 3D Terrain Maps</h3>
-					<p>See your rides, runs, and hikes overlaid on stunning 3D terrain</p>
-				</div>
-				<div class="feature">
-					<h3>🔗 intervals.icu Integration</h3>
-					<p>Automatically sync your activities from intervals.icu</p>
-				</div>
-				<div class="feature">
-					<h3>🎨 Multiple Map Styles</h3>
-					<p>Choose from outdoor, satellite, and dark themes</p>
-				</div>
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12 max-w-2xl mx-auto">
+				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+					<Card.Header>
+						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+							<Zap class="h-5 w-5" />
+							Lightning fast vector tiles
+						</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-white/90 text-sm text-left">Pre-generated vector map tiles for instant loading and smooth interactions</p>
+					</Card.Content>
+				</Card.Root>
+
+				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+					<Card.Header>
+						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+							<MapIcon class="h-5 w-5" />
+							Explore all your journeys
+						</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-white/90 text-sm text-left">Navigate through your complete activity history on a single interactive map</p>
+					</Card.Content>
+				</Card.Root>
+
+				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+					<Card.Header>
+						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+							<Navigation class="h-5 w-5" />
+							All GPS activities
+						</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-white/90 text-sm text-left">Rides, runs, hikes, ski tours, swims, and more - if it has GPS, we display it</p>
+					</Card.Content>
+				</Card.Root>
+
+				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+					<Card.Header>
+						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+							<RefreshCw class="h-5 w-5" />
+							Quick intervals.icu import
+						</Card.Title>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-white/90 text-sm text-left">One-click authorization and your activities start syncing immediately</p>
+					</Card.Content>
+				</Card.Root>
 			</div>
 
 			<SignedIn>
-				<button class="login-button primary" onclick={viewMap}>
+				<Button size="lg" onclick={viewMap} class="text-lg px-8 py-6">
 					View Map
-				</button>
+				</Button>
 			</SignedIn>
 
 			<SignedOut>
-				<button
-					class="login-button primary"
-					onclick={handleIntervalsSignup}
-				>
+				<Button size="lg" onclick={handleIntervalsSignup} class="text-lg px-8 py-6">
 					Connect with Intervals.icu
-				</button>
+				</Button>
 			</SignedOut>
 		</div>
 	</div>
 </main>
 
 <svelte:head>
-    <title>Ridelines - intervals.icu activity mapper</title>
+    <title>ridelines.xyz - intervals.icu activity mapper</title>
     <meta name="description" content="Visualize your intervals.icu activities on beautiful 3D terrain maps">
 </svelte:head>
-
-<style>
-	.landing-page {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		padding: 2rem;
-	}
-
-	.hero {
-		text-align: center;
-		max-width: 800px;
-		color: white;
-	}
-
-	.hero-content h1 {
-		font-size: 3.5rem;
-		font-weight: 700;
-		margin-bottom: 1rem;
-		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-	}
-
-	.subtitle {
-		font-size: 1.25rem;
-		margin-bottom: 3rem;
-		opacity: 0.9;
-	}
-
-	.features {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 2rem;
-		margin-bottom: 3rem;
-	}
-
-	.feature {
-		background: rgba(255, 255, 255, 0.1);
-		padding: 1.5rem;
-		border-radius: 8px;
-		backdrop-filter: blur(10px);
-	}
-
-	.feature h3 {
-		font-size: 1.1rem;
-		margin-bottom: 0.5rem;
-	}
-
-	.feature p {
-		font-size: 0.9rem;
-		opacity: 0.9;
-		line-height: 1.4;
-	}
-
-	.login-button {
-		background: #ff6b6b;
-		color: white;
-		border: none;
-		padding: 1rem 2rem;
-		font-size: 1.1rem;
-		font-weight: 600;
-		border-radius: 8px;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-	}
-
-	.login-button:hover {
-		background: #ff5252;
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-	}
-
-	@media (max-width: 768px) {
-		.hero-content h1 {
-			font-size: 2.5rem;
-		}
-
-		.features {
-			grid-template-columns: 1fr;
-		}
-
-		.login-button {
-			width: 100%;
-		}
-	}
-</style>
