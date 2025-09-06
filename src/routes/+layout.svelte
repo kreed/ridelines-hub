@@ -13,19 +13,23 @@ const queryClient = new QueryClient();
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+  <link rel="icon" href={favicon} />
 </svelte:head>
 
 <ModeWatcher />
 <ClerkProvider
-	appearance={{
-		theme: shadcn
-	}}
+  appearance={{
+    theme: shadcn,
+  }}
 >
-	<QueryClientProvider client={queryClient}>
-		<div class="[--header-height:calc(--spacing(14))]">
-			<SiteHeader/>
-			{@render children()}
-		</div>
-	</QueryClientProvider>
+  <QueryClientProvider client={queryClient}>
+    <div
+      class="flex h-screen flex-col [--header-height:calc(--spacing(14))]"
+    >
+      <SiteHeader />
+      <main class="flex-1 overflow-hidden">
+        {@render children()}
+      </main>
+    </div>
+  </QueryClientProvider>
 </ClerkProvider>
