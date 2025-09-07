@@ -13,12 +13,12 @@ import {
   VectorTileSource,
 } from "svelte-maplibre-gl";
 import { useActivityFilter } from "$lib/composables/useActivityFilter.svelte.js";
+import { useErrorToast } from "$lib/composables/useErrorToast.svelte.js";
 import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
 import type { Config } from "$lib/types.js";
 import { trpc } from "$lib/utils/trpc";
 import ActivityPopup from "./ActivityPopup.svelte";
 import ActivityTypeFilter from "./activity-type-filter.svelte";
-import ErrorMessage from "./ErrorMessage.svelte";
 import MapStyleSelector from "./map-style-selector.svelte";
 
 let { config }: { config: Config } = $props();
@@ -30,23 +30,23 @@ const userQuery = createQuery(() => ({
   queryKey: ["user.pmtiles", clerk.user?.id],
   queryFn: () => trpc.user.pmtiles.query(),
   staleTime: 60_000,
+  enabled: Boolean(clerk.user?.id),
 }));
 
 const pmtilesUrl = $derived(userQuery.data ?? null);
 const mapStyle = useMapStyle(config);
 const activityFilter = useActivityFilter(config);
 
-// Error handling state
-let errorMessage = $state("");
-
 // Cursor state for hover effects
 let cursor = $state<string | undefined>(undefined);
 
-// Surface query errors
+// Surface query errors with persistent toast
+useErrorToast(() => userQuery.isError, "Failed to load activity data.");
+
+// Log errors to console
 $effect(() => {
   if (userQuery.isError) {
-    errorMessage = "Failed to load activity data.";
-    console.error(errorMessage, userQuery.error);
+    console.error("Failed to load activity data.", userQuery.error);
   }
 });
 
@@ -143,8 +143,6 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 			bind:checkedTypes={activityFilter.checkedTypes}
 		/>
 	</div>
-
-	<ErrorMessage show={!!errorMessage} message={errorMessage} />
 </div>
 
 <style>

@@ -7,9 +7,16 @@ import type { Snippet } from "svelte";
 import { ClerkProvider } from "svelte-clerk";
 import favicon from "$lib/assets/favicon.svg";
 import SiteHeader from "$lib/components/site-header.svelte";
+import { Toaster } from "$lib/components/ui/sonner";
 
 const { children }: { children: Snippet } = $props();
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5_000, // 5 seconds
+    },
+  },
+});
 </script>
 
 <svelte:head>
@@ -17,6 +24,7 @@ const queryClient = new QueryClient();
 </svelte:head>
 
 <ModeWatcher />
+<Toaster closeButton={true} position="top-center" />
 <ClerkProvider
   appearance={{
     theme: shadcn,
