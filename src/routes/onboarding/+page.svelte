@@ -1,11 +1,10 @@
 <script lang="ts">
 import { createMutation } from "@tanstack/svelte-query";
 import { goto } from "$app/navigation";
-import AuthRequired from "$lib/components/AuthRequired.svelte";
+import AuthRequired from "$lib/components/auth-required.svelte";
 import * as Alert from "$lib/components/ui/alert/index.js";
 import { Button } from "$lib/components/ui/button/index.js";
 import * as Card from "$lib/components/ui/card/index.js";
-import type { Config } from "$lib/types";
 import { trpc } from "$lib/utils/trpc";
 
 const syncMutation = createMutation(() => ({

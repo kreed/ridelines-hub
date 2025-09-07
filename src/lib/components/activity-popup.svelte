@@ -69,13 +69,3 @@ handleClick = (e: maplibregl.MapLayerMouseEvent) => {
 		</div>
 	</Popup>
 {/if}
-
-<style>
-	/* Override MapLibre's default popup styles */
-	:global(.maplibregl-popup-content) {
-		padding: 0 !important;
-		background: transparent !important;
-		border: none !important;
-		box-shadow: none !important;
-	}
-</style>

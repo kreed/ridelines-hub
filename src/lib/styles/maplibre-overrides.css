@@ -1,0 +1,7 @@
+/* Remove styling for MapLibre popups since we'll do it ourselves */
+.maplibregl-popup .maplibregl-popup-content {
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}

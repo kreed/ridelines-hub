@@ -70,7 +70,7 @@ const getLineColor = () => {
 let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | undefined>(undefined);
 </script>
 
-<div class="map-container">
+<div class="relative w-full h-full">
 	<!-- Add PMTiles Protocol globally -->
 	<PMTilesProtocol />
 
@@ -79,7 +79,7 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		center={config.defaultCenter}
 		zoom={config.defaultZoom}
 		hash={true}
-		class="map"
+		class="w-full h-full bg-black"
 		{cursor}
 	>
 		<!-- Globe Projection -->
@@ -144,18 +144,3 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		/>
 	</div>
 </div>
-
-<style>
-	.map-container {
-		position: relative;
-		width: 100%;
-		height: 100%;
-	}
-
-	:global(.map) {
-		width: 100%;
-		height: 100%;
-		background-color: #000000;
-	}
-
-</style>
