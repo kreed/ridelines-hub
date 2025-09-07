@@ -7,6 +7,7 @@ import type { Snippet } from "svelte";
 import { ClerkProvider } from "svelte-clerk";
 import { page } from "$app/stores";
 import favicon from "$lib/assets/favicon.svg";
+import CloudWatchRUM from "$lib/components/cloudwatch-rum.svelte";
 import SiteHeader from "$lib/components/site-header.svelte";
 import { Toaster } from "$lib/components/ui/sonner";
 
@@ -28,6 +29,7 @@ const isMapPage = $derived($page.url.pathname === "/map");
 
 <ModeWatcher />
 <Toaster closeButton={true} position="top-center" />
+<CloudWatchRUM />
 <ClerkProvider
   appearance={{
     theme: shadcn,

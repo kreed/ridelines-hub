@@ -24,6 +24,7 @@ env:
   IMAGE_NAME: kreed/ridelines-hub
   PUBLIC_MAPTILER_API_KEY: ${{ secrets.MAPTILER_API_KEY }}
   PUBLIC_CLERK_PUBLISHABLE_KEY: __CLERK_PUBLISHABLE_KEY__
+  PUBLIC_RUM_APP_ID: __RUM_APP_ID__
 
 jobs:
   test:
