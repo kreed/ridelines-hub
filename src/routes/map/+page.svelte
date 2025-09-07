@@ -10,5 +10,5 @@ import "maplibre-gl/dist/maplibre-gl.css";
 </AuthRequired>
 
 <svelte:head>
-    <title>Ridelines - Activity Map</title>
+    <title>ridelines.xyz - Activity Map</title>
 </svelte:head>
