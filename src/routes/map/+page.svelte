@@ -1,6 +1,6 @@
 <script lang="ts">
-import ActivityMap from "$lib/components/activity-map.svelte";
 import AuthRequired from "$lib/components/auth-required.svelte";
+import ActivityMap from "$lib/components/map/activity-map.svelte";
 import { config } from "$lib/stores/config.js";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "$lib/styles/maplibre-overrides.css";
