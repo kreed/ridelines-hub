@@ -19,6 +19,8 @@ import type { Config } from "$lib/types.js";
 import { trpc } from "$lib/utils/trpc";
 import ActivityPopup from "./activity-popup.svelte";
 import ActivityTypeFilter from "./activity-type-filter.svelte";
+import MapAttribution from "./map-attribution.svelte";
+import MapNavigationControl from "./map-navigation-control.svelte";
 import MapStyleSelector from "./map-style-selector.svelte";
 
 let { config }: { config: Config } = $props();
@@ -68,6 +70,9 @@ const getLineColor = () => {
 
 // Get popup handler from child component
 let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | undefined>(undefined);
+
+// Map instance reference
+let mapInstance = $state<maplibregl.Map | undefined>();
 </script>
 
 <div class="relative w-full h-full">
@@ -81,12 +86,11 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		hash={true}
 		class="w-full h-full bg-black"
 		{cursor}
+		attributionControl={false}
+		bind:map={mapInstance}
 	>
 		<!-- Globe Projection -->
 		<Projection type="globe" />
-
-		<!-- Navigation Controls -->
-		<NavigationControl showCompass showZoom visualizePitch />
 
 		<!-- Terrain Source and Configuration -->
 		<RasterDEMTileSource
@@ -142,5 +146,15 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 			activityTypes={activityFilter.getActivityTypes()}
 			bind:checkedTypes={activityFilter.checkedTypes}
 		/>
+	</div>
+
+	<!-- Navigation Control -->
+	<div class="absolute top-3 right-3 z-10">
+		<MapNavigationControl map={mapInstance} />
+	</div>
+
+	<!-- Attribution -->
+	<div class="absolute bottom-0 right-0 z-10">
+		<MapAttribution />
 	</div>
 </div>
