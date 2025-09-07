@@ -1,6 +1,8 @@
 <script lang="ts">
+import { Activity, ExternalLink, X } from "@lucide/svelte";
 import type maplibregl from "maplibre-gl";
 import { Popup } from "svelte-maplibre-gl";
+import { Button } from "$lib/components/ui/button";
 import type { ActivityProperties } from "$lib/types.js";
 
 let {
@@ -54,36 +56,56 @@ const formatDate = (dateStr: string): string => {
 	<Popup
 		lnglat={lngLat}
 		bind:open={isOpen}
-		closeButton={true}
+		closeButton={false}
 		closeOnClick={true}
 		anchor="bottom"
 	>
-		<div class="activity-popup">
-			<h3>{properties.name || "Unnamed Activity"}</h3>
-			<div class="details">
-				<div><strong>Type:</strong> {properties.type || "Unknown"}</div>
-				{#if properties.start_date_local}
-					<div><strong>Date:</strong> {formatDate(properties.start_date_local)}</div>
-				{/if}
-				{#if properties.distance && properties.distance > 0}
-					{@const dist = formatDistance(properties.distance)}
-					<div><strong>Distance:</strong> {dist.km} km ({dist.mi} mi)</div>
-				{/if}
-				{#if properties.total_elevation_gain && properties.total_elevation_gain > 0}
-					{@const elev = formatElevation(properties.total_elevation_gain)}
-					<div><strong>Elevation:</strong> {elev.m} m ({elev.ft} ft)</div>
-				{/if}
-				{#if properties.elapsed_time && properties.elapsed_time > 0}
-					<div><strong>Time:</strong> {formatTime(properties.elapsed_time)}</div>
-				{/if}
+		<div class="p-3 rounded-md border backdrop-blur-md text-sm shadow-md border-black/10 bg-white/60 text-black dark:border-white/20 dark:bg-black/20 dark:text-white">
+			<div class="flex items-start justify-between mb-2">
+				<h3 class="flex items-center gap-1.5 text-sm font-semibold">
+					<Activity class="h-3.5 w-3.5" />
+					{properties.name || "Unnamed Activity"}
+				</h3>
+				<button
+					onclick={() => isOpen = false}
+					class="flex items-center justify-center w-6 h-6 -mt-1 -mr-1 rounded bg-transparent border-0 cursor-pointer transition-all text-black/50 hover:text-black/70 hover:bg-black/10 dark:text-white/50 dark:hover:text-white/70 dark:hover:bg-white/10"
+					aria-label="Close"
+				>
+					<X class="h-3.5 w-3.5" />
+				</button>
 			</div>
+
+			<div class="space-y-1.5 text-xs">
+				<div class="flex items-center gap-2">
+					<span class="font-medium">Type:</span>
+					<span class="text-black/60 dark:text-white/60">{properties.type || "Unknown"}</span>
+				</div>
+			</div>
+
 			{#if properties.id}
-				<div class="link">
-					<a href="https://intervals.icu/activities/{properties.id}" target="_blank" rel="noopener">
+				<div class="mt-2 pt-2 border-t border-black/10 dark:border-white/20">
+					<Button
+						class="w-full h-7 text-xs"
+						variant="secondary"
+						href="https://intervals.icu/activities/{properties.id}"
+						target="_blank"
+						rel="noopener"
+					>
+						<ExternalLink class="h-3 w-3 mr-1" />
 						View on intervals.icu
-					</a>
+					</Button>
 				</div>
 			{/if}
 		</div>
 	</Popup>
 {/if}
+
+<style>
+	/* Override MapLibre's default popup styles */
+	:global(.maplibregl-popup-content) {
+		padding: 0 !important;
+		background: transparent !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
+</style>

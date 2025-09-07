@@ -17,7 +17,7 @@ import { useErrorToast } from "$lib/composables/useErrorToast.svelte.js";
 import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
 import type { Config } from "$lib/types.js";
 import { trpc } from "$lib/utils/trpc";
-import ActivityPopup from "./ActivityPopup.svelte";
+import ActivityPopup from "./activity-popup.svelte";
 import ActivityTypeFilter from "./activity-type-filter.svelte";
 import MapStyleSelector from "./map-style-selector.svelte";
 
@@ -158,46 +158,4 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		background-color: #000000;
 	}
 
-	:global(.maplibregl-popup-content) {
-		padding: 15px;
-		border-radius: 5px;
-	}
-
-	:global(.activity-popup) {
-		font-family: 'Helvetica Neue', Arial, sans-serif;
-		line-height: 1.4;
-	}
-
-	:global(.activity-popup h3) {
-		margin: 0 0 8px 0;
-		color: #333;
-		font-size: 14px;
-		font-weight: 600;
-	}
-
-	:global(.activity-popup .details) {
-		margin: 8px 0;
-		font-size: 12px;
-		color: #666;
-	}
-
-	:global(.activity-popup .link) {
-		margin-top: 10px;
-	}
-
-	:global(.activity-popup a) {
-		display: inline-block;
-		background: #3386c0;
-		color: white;
-		text-decoration: none;
-		padding: 6px 12px;
-		border-radius: 3px;
-		font-size: 11px;
-		font-weight: 600;
-		transition: background-color 0.2s ease;
-	}
-
-	:global(.activity-popup a:hover) {
-		background: #4ea0da;
-	}
 </style>
