@@ -6,11 +6,17 @@ import { Button } from "./ui/button";
 import * as DropdownMenu from "./ui/dropdown-menu";
 import { LightSwitch } from "./ui/light-switch";
 
+let {
+  variant = "default",
+}: {
+  variant?: "default" | "glass";
+} = $props();
+
 const clerkContext = useClerkContext();
 </script>
 
 <div class="flex items-center gap-2">
-  <LightSwitch variant="ghost" />
+  <LightSwitch variant={variant === "glass" ? "glass" : "ghost"} />
 
   {#if clerkContext.auth.userId}
     <DropdownMenu.Root>

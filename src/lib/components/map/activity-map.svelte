@@ -130,16 +130,18 @@ let mapInstance = $state<maplibregl.Map | undefined>();
 
 	<!-- Header overlay using SiteHeader component -->
 	<div class="absolute top-0 inset-x-0 z-50">
-		<SiteHeader>
-			<MapStyleSelector
-				mapStyles={config.mapStyles}
-				currentStyle={mapStyle.currentStyleUrl}
-				onStyleChange={mapStyle.changeStyle}
-			/>
-			<ActivityTypeFilter
-				activityTypes={activityFilter.getActivityTypes()}
-				bind:checkedTypes={activityFilter.checkedTypes}
-			/>
+		<SiteHeader variant="glass">
+			<div class="flex flex-wrap gap-2">
+				<MapStyleSelector
+					mapStyles={config.mapStyles}
+					currentStyle={mapStyle.currentStyleUrl}
+					onStyleChange={mapStyle.changeStyle}
+				/>
+				<ActivityTypeFilter
+					activityTypes={activityFilter.getActivityTypes()}
+					bind:checkedTypes={activityFilter.checkedTypes}
+				/>
+			</div>
 		</SiteHeader>
 	</div>
 

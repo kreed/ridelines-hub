@@ -1,10 +1,16 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
+
+let {
+  variant = "default",
+}: {
+  variant?: "default" | "glass";
+} = $props();
 </script>
 
 <button
   onclick={() => goto('/')}
-  class="flex h-10 items-center gap-2 text-sm font-semibold transition-colors hover:opacity-80"
+  class={variant === "glass" ? "flex h-10 items-center gap-2 rounded-md border px-3 text-sm font-semibold backdrop-blur-md transition-colors border-black/10 bg-white/60 text-black hover:bg-white/70 dark:border-white/20 dark:bg-black/20 dark:text-white dark:hover:bg-black/30" : "flex h-10 items-center gap-2 rounded-md border border-transparent bg-transparent px-3 text-sm font-semibold transition-all hover:bg-accent hover:text-accent-foreground"}
   aria-label="Go to homepage"
 >
   <!-- Logo SVG - abstract mountain/terrain lines -->
