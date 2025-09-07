@@ -2,6 +2,7 @@
 import { Map as MapIcon, Navigation, RefreshCw, Zap } from "@lucide/svelte";
 import { useClerkContext } from "svelte-clerk";
 import { goto } from "$app/navigation";
+import SiteHeader from "$lib/components/site-header.svelte";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 
@@ -21,10 +22,12 @@ function viewMap() {
 </script>
 
 <!-- Full page gradient background -->
-<div class="fixed inset-0 bg-gradient-to-br from-[#667eea] to-[#764ba2] -z-10"></div>
+<div class="fixed inset-0 bg-gradient-to-br from-[#667eea] to-[#764ba2] dark:from-[#4c3a8a] dark:to-[#3d2951] -z-10"></div>
 
-<main class="min-h-screen flex items-center justify-center p-8">
-	<div class="text-center max-w-4xl text-white">
+<div class="flex flex-col min-h-screen text-white">
+  <SiteHeader />
+  <main class="flex-1 flex items-center justify-center p-8">
+    <div class="text-center max-w-4xl">
 		<div class="space-y-8">
 			<h1 class="text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">ridelines.xyz</h1>
 			<p class="text-xl md:text-2xl opacity-90">All your activities. One map.</p>
@@ -90,7 +93,8 @@ function viewMap() {
 			{/if}
 		</div>
 	</div>
-</main>
+  </main>
+</div>
 
 <svelte:head>
     <title>ridelines.xyz - intervals.icu activity mapper</title>
