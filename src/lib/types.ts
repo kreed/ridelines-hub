@@ -1,7 +1,8 @@
 export interface MapStyle {
   id: string;
   name: string;
-  url: string;
+  lightUrl: string;
+  darkUrl: string;
 }
 
 export interface Config {

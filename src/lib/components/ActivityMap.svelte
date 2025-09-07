@@ -17,8 +17,9 @@ import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
 import type { Config } from "$lib/types.js";
 import { trpc } from "$lib/utils/trpc";
 import ActivityPopup from "./ActivityPopup.svelte";
+import ActivityTypeFilter from "./activity-type-filter.svelte";
 import ErrorMessage from "./ErrorMessage.svelte";
-import FilterPanel from "./FilterPanel.svelte";
+import MapStyleSelector from "./map-style-selector.svelte";
 
 let { config }: { config: Config } = $props();
 
@@ -130,13 +131,18 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 		<ActivityPopup bind:handleClick={popupHandleClick} />
 	</MapLibre>
 
-	<FilterPanel
-		activityTypes={activityFilter.getActivityTypes()}
-		bind:checkedTypes={activityFilter.checkedTypes}
-		mapStyles={config.mapStyles}
-		currentStyle={mapStyle.currentStyleUrl}
-		onStyleChange={mapStyle.changeStyle}
-	/>
+	<!-- Map Controls -->
+	<div class="absolute top-3 left-3 z-10 flex flex-row gap-2">
+		<MapStyleSelector
+			mapStyles={config.mapStyles}
+			currentStyle={mapStyle.currentStyleUrl}
+			onStyleChange={mapStyle.changeStyle}
+		/>
+		<ActivityTypeFilter
+			activityTypes={activityFilter.getActivityTypes()}
+			bind:checkedTypes={activityFilter.checkedTypes}
+		/>
+	</div>
 
 	<ErrorMessage show={!!errorMessage} message={errorMessage} />
 </div>

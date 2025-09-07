@@ -5,18 +5,21 @@ export const config: Config = {
   mapStyles: [
     {
       id: "dataviz-dark",
-      name: "Dark",
-      url: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
+      name: "Standard",
+      lightUrl: `https://api.maptiler.com/maps/dataviz/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
+      darkUrl: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
     },
     {
       id: "outdoor-dark",
-      name: "Dark Terrain",
-      url: `https://api.maptiler.com/maps/outdoor-v2-dark/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
+      name: "Terrain",
+      lightUrl: `https://api.maptiler.com/maps/outdoor-v2/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
+      darkUrl: `https://api.maptiler.com/maps/outdoor-v2-dark/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
     },
     {
       id: "satellite",
       name: "Satellite",
-      url: `https://api.maptiler.com/maps/satellite/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
+      lightUrl: `https://api.maptiler.com/maps/satellite/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
+      darkUrl: `https://api.maptiler.com/maps/satellite/style.json?key=${PUBLIC_MAPTILER_API_KEY}`,
     },
   ],
   activityTypes: ["Ride", "Run", "Walk", "Hike", "AlpineSki"] as const,

@@ -2,9 +2,12 @@ import { PUBLIC_MAPTILER_API_KEY } from "$env/static/public";
 import type { Config } from "$lib/types.js";
 
 export function useMapStyle(config: Config) {
-  let currentStyleUrl = $state(config.mapStyles[0]?.url || "");
+  let currentStyleUrl = $state(config.mapStyles[0]?.lightUrl || "");
 
-  const currentStyle = $derived(config.mapStyles.find((style) => style.url === currentStyleUrl) || config.mapStyles[0]);
+  const currentStyle = $derived(
+    config.mapStyles.find((style) => style.lightUrl === currentStyleUrl || style.darkUrl === currentStyleUrl) ||
+      config.mapStyles[0],
+  );
 
   const changeStyle = (styleUrl: string) => {
     currentStyleUrl = styleUrl;
