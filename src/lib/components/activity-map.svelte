@@ -3,15 +3,7 @@ import { PMTilesProtocol } from "@svelte-maplibre-gl/pmtiles";
 import { createQuery } from "@tanstack/svelte-query";
 import maplibregl from "maplibre-gl";
 import { useClerkContext } from "svelte-clerk";
-import {
-  LineLayer,
-  MapLibre,
-  NavigationControl,
-  Projection,
-  RasterDEMTileSource,
-  Terrain,
-  VectorTileSource,
-} from "svelte-maplibre-gl";
+import { LineLayer, MapLibre, Projection, RasterDEMTileSource, Terrain, VectorTileSource } from "svelte-maplibre-gl";
 import { useActivityFilter } from "$lib/composables/useActivityFilter.svelte.js";
 import { useErrorToast } from "$lib/composables/useErrorToast.svelte.js";
 import { useMapStyle } from "$lib/composables/useMapStyle.svelte.js";
@@ -22,6 +14,7 @@ import ActivityTypeFilter from "./activity-type-filter.svelte";
 import MapAttribution from "./map-attribution.svelte";
 import MapNavigationControl from "./map-navigation-control.svelte";
 import MapStyleSelector from "./map-style-selector.svelte";
+import SiteHeader from "./site-header.svelte";
 
 let { config }: { config: Config } = $props();
 
@@ -75,7 +68,7 @@ let popupHandleClick = $state<((e: maplibregl.MapLayerMouseEvent) => void) | und
 let mapInstance = $state<maplibregl.Map | undefined>();
 </script>
 
-<div class="relative w-full h-full">
+<div class="absolute inset-0">
 	<!-- Add PMTiles Protocol globally -->
 	<PMTilesProtocol />
 
@@ -135,25 +128,27 @@ let mapInstance = $state<maplibregl.Map | undefined>();
 		<ActivityPopup bind:handleClick={popupHandleClick} />
 	</MapLibre>
 
-	<!-- Map Controls -->
-	<div class="absolute top-3 left-3 z-10 flex flex-row gap-2">
-		<MapStyleSelector
-			mapStyles={config.mapStyles}
-			currentStyle={mapStyle.currentStyleUrl}
-			onStyleChange={mapStyle.changeStyle}
-		/>
-		<ActivityTypeFilter
-			activityTypes={activityFilter.getActivityTypes()}
-			bind:checkedTypes={activityFilter.checkedTypes}
-		/>
+	<!-- Header overlay using SiteHeader component -->
+	<div class="absolute top-0 left-0 right-0 z-50">
+		<SiteHeader>
+			<MapStyleSelector
+				mapStyles={config.mapStyles}
+				currentStyle={mapStyle.currentStyleUrl}
+				onStyleChange={mapStyle.changeStyle}
+			/>
+			<ActivityTypeFilter
+				activityTypes={activityFilter.getActivityTypes()}
+				bind:checkedTypes={activityFilter.checkedTypes}
+			/>
+		</SiteHeader>
 	</div>
 
-	<!-- Navigation Control -->
-	<div class="absolute top-3 right-3 z-10">
+	<!-- Bottom Left -->
+	<div class="absolute bottom-3 left-3 z-10">
 		<MapNavigationControl map={mapInstance} />
 	</div>
 
-	<!-- Attribution -->
+	<!-- Bottom Right -->
 	<div class="absolute bottom-0 right-0 z-10">
 		<MapAttribution />
 	</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Map as MapIcon, Navigation, RefreshCw, Zap } from "@lucide/svelte";
-import { SignedIn, SignedOut, useClerkContext } from "svelte-clerk";
+import { useClerkContext } from "svelte-clerk";
 import { goto } from "$app/navigation";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
@@ -20,7 +20,10 @@ function viewMap() {
 }
 </script>
 
-<main class="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#667eea] to-[#764ba2] p-8">
+<!-- Full page gradient background -->
+<div class="fixed inset-0 bg-gradient-to-br from-[#667eea] to-[#764ba2] -z-10"></div>
+
+<main class="min-h-screen flex items-center justify-center p-8">
 	<div class="text-center max-w-4xl text-white">
 		<div class="space-y-8">
 			<h1 class="text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">ridelines.xyz</h1>
@@ -76,17 +79,15 @@ function viewMap() {
 				</Card.Root>
 			</div>
 
-			<SignedIn>
+			{#if clerkContext.auth.userId}
 				<Button size="lg" onclick={viewMap} class="text-lg px-8 py-6">
 					View Map
 				</Button>
-			</SignedIn>
-
-			<SignedOut>
+			{:else}
 				<Button size="lg" onclick={handleIntervalsSignup} class="text-lg px-8 py-6">
 					Connect with Intervals.icu
 				</Button>
-			</SignedOut>
+			{/if}
 		</div>
 	</div>
 </main>

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
 import { ModeWatcher } from "mode-watcher";
 import type { Snippet } from "svelte";
 import { ClerkProvider } from "svelte-clerk";
+import { page } from "$app/stores";
 import favicon from "$lib/assets/favicon.svg";
 import SiteHeader from "$lib/components/site-header.svelte";
 import { Toaster } from "$lib/components/ui/sonner";
@@ -17,6 +18,8 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const isMapPage = $derived($page.url.pathname === "/map");
 </script>
 
 <svelte:head>
@@ -31,10 +34,10 @@ const queryClient = new QueryClient({
   }}
 >
   <QueryClientProvider client={queryClient}>
-    <div
-      class="flex h-screen flex-col [--header-height:calc(--spacing(14))]"
-    >
-      <SiteHeader />
+    <div class="flex flex-col h-screen">
+      {#if !isMapPage}
+        <SiteHeader />
+      {/if}
       <main class="flex-1 overflow-hidden">
         {@render children()}
       </main>
