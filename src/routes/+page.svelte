@@ -24,7 +24,7 @@ function viewMap() {
 	<div class="text-center max-w-4xl text-white">
 		<div class="space-y-8">
 			<h1 class="text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">ridelines.xyz</h1>
-			<p class="text-xl md:text-2xl opacity-90">Visualize all your intervals.icu activities on one map</p>
+			<p class="text-xl md:text-2xl opacity-90">All your activities. One map.</p>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12 max-w-2xl mx-auto">
 				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
