@@ -3,6 +3,7 @@ import { Activity, Check, ChevronDown } from "@lucide/svelte";
 import { Badge } from "$lib/components/ui/badge";
 import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 import type { FilterableActivityType } from "../types.js";
+import MapDropdownTrigger from "./map-dropdown-trigger.svelte";
 
 let {
   activityTypes = [],
@@ -25,7 +26,7 @@ const allTypesSelected = $derived(checkedTypes.length === activityTypes.length);
 </script>
 
 <DropdownMenu.Root>
-  <DropdownMenu.Trigger class="map-control-trigger">
+  <MapDropdownTrigger>
       <div class="flex items-center gap-2">
         <Activity class="h-4 w-4" />
         <span>Activities</span>
@@ -38,9 +39,9 @@ const allTypesSelected = $derived(checkedTypes.length === activityTypes.length);
         {/if}
         <ChevronDown class="h-4 w-4" />
       </div>
-  </DropdownMenu.Trigger>
+  </MapDropdownTrigger>
   <DropdownMenu.Content class="w-48">
-    <DropdownMenu.Item 
+    <DropdownMenu.Item
       onSelect={() => {
         if (allTypesSelected) {
           checkedTypes = [];

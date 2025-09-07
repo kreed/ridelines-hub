@@ -119,11 +119,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-@layer components {
-  .map-control-trigger {
-    @apply inline-flex h-10 w-48 items-center justify-between rounded-md border px-3 py-2 text-sm backdrop-blur-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
-    @apply border-black/10 bg-white/60 text-black hover:bg-white/70 focus-visible:ring-black/20;
-    @apply dark:border-white/20 dark:bg-black/20 dark:text-white dark:hover:bg-black/30 dark:focus-visible:ring-white/50;
-  }
-}

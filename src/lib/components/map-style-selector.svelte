@@ -3,6 +3,7 @@ import { Check, ChevronDown, Layers } from "@lucide/svelte";
 import { mode } from "mode-watcher";
 import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
 import type { MapStyle } from "../types.js";
+import MapDropdownTrigger from "./map-dropdown-trigger.svelte";
 
 let {
   mapStyles = [],
@@ -36,13 +37,13 @@ const currentStyleData = $derived(
 </script>
 
 <DropdownMenu.Root>
-  <DropdownMenu.Trigger class="map-control-trigger">
+  <MapDropdownTrigger>
     <div class="flex items-center gap-2">
       <Layers class="h-4 w-4" />
       <span>{currentStyleData?.name || 'Select map style'}</span>
     </div>
     <ChevronDown class="h-4 w-4" />
-  </DropdownMenu.Trigger>
+  </MapDropdownTrigger>
   <DropdownMenu.Content class="w-48">
     {#each mapStyles as style}
       <DropdownMenu.Item
