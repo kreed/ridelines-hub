@@ -51,7 +51,7 @@
     "@clerk/themes": "^2.4.17",
     "@svelte-maplibre-gl/pmtiles": "^1.0.1",
     "@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@746b9c5",
-    "@trpc/client": "^11.5.0",
+    "@trpc/client": "^11.5.1",
     "aws-rum-web": "^1.25.0",
     "maplibre-gl": "^5.7.0",
     "pmtiles": "^4.3.0",
