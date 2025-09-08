@@ -146,7 +146,7 @@ jobs:
             ridelines.hub.commit=${{ steps.hub_sha.outputs.sha }}
 
       - name: Trigger bundle build
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.FRAME_REPO_TOKEN }}
           script: |
