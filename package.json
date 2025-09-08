@@ -53,7 +53,7 @@
     "@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@746b9c5",
     "@trpc/client": "^11.5.0",
     "aws-rum-web": "^1.25.0",
-    "maplibre-gl": "^5.7.0",
+    "maplibre-gl": "^5.7.1",
     "pmtiles": "^4.3.0",
     "svelte-clerk": "^0.16.10",
     "svelte-maplibre-gl": "^1.0.1"
