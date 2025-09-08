@@ -18,7 +18,7 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.2.3",
     "@internationalized/date": "^3.9.0",
     "@kreed/ridelines-chainring": "^1.0.0-20250901003614",
     "@lucide/svelte": "^0.515.0",
