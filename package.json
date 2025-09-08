@@ -21,7 +21,7 @@
     "@biomejs/biome": "2.2.2",
     "@internationalized/date": "^3.9.0",
     "@kreed/ridelines-chainring": "^1.0.0-20250901003614",
-    "@lucide/svelte": "^0.515.0",
+    "@lucide/svelte": "^0.542.0",
     "@playwright/test": "^1.55.0",
     "@sveltejs/adapter-auto": "^6.0.0",
     "@sveltejs/adapter-static": "^3.0.9",
