@@ -1,7 +1,7 @@
 <script lang="ts">
 import { AwsRum } from "aws-rum-web";
 import { onMount } from "svelte";
-import { PUBLIC_RUM_APP_ID } from "$env/static/public";
+import { env } from "$env/dynamic/public";
 
 onMount(() => {
   try {
@@ -15,7 +15,7 @@ onMount(() => {
       logLevel: "ERROR",
     };
 
-    const awsRum = new AwsRum(PUBLIC_RUM_APP_ID, "1.0.0", "us-west-2", config);
+    const awsRum = new AwsRum(env.PUBLIC_RUM_APP_ID, "1.0.0", "us-west-2", config);
 
     awsRum.enable();
   } catch (error) {
