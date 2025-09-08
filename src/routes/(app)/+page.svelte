@@ -2,7 +2,6 @@
 import { Map as MapIcon, Navigation, RefreshCw, Zap } from "@lucide/svelte";
 import { useClerkContext } from "svelte-clerk";
 import { goto } from "$app/navigation";
-import SiteHeader from "$lib/components/site-header.svelte";
 import { Button } from "$lib/components/ui/button";
 import * as Card from "$lib/components/ui/card";
 
@@ -21,11 +20,6 @@ function viewMap() {
 }
 </script>
 
-<!-- Full page gradient background -->
-<div class="fixed inset-0 bg-gradient-to-br from-[#667eea] to-[#764ba2] dark:from-[#4c3a8a] dark:to-[#3d2951] -z-10"></div>
-
-<div class="flex flex-col min-h-screen text-white">
-  <SiteHeader />
   <main class="flex-1 flex items-center justify-center p-8">
     <div class="text-center max-w-4xl">
 		<div class="space-y-8">
@@ -33,51 +27,51 @@ function viewMap() {
 			<p class="text-xl md:text-2xl opacity-90">All your activities. One map.</p>
 
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12 max-w-2xl mx-auto">
-				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+				<Card.Root variant="glass">
 					<Card.Header>
-						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+						<Card.Title class="text-lg flex items-center justify-center gap-2">
 							<Zap class="h-5 w-5" />
 							Lightning fast vector tiles
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						<p class="text-white/90 text-sm text-left">Pre-generated vector map tiles for instant loading and smooth interactions</p>
+						<p class="opacity-90 text-sm text-left">Pre-generated vector map tiles for instant loading and smooth interactions</p>
 					</Card.Content>
 				</Card.Root>
 
-				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+				<Card.Root variant="glass">
 					<Card.Header>
-						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+						<Card.Title class="text-lg flex items-center justify-center gap-2">
 							<MapIcon class="h-5 w-5" />
 							Explore all your journeys
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						<p class="text-white/90 text-sm text-left">Navigate through your complete activity history on a single interactive map</p>
+						<p class="opacity-90 text-sm text-left">Navigate through your complete activity history on a single interactive map</p>
 					</Card.Content>
 				</Card.Root>
 
-				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+				<Card.Root variant="glass">
 					<Card.Header>
-						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+						<Card.Title class="text-lg flex items-center justify-center gap-2">
 							<Navigation class="h-5 w-5" />
 							All GPS activities
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						<p class="text-white/90 text-sm text-left">Rides, runs, hikes, ski tours, swims, and more - if it has GPS, we display it</p>
+						<p class="opacity-90 text-sm text-left">Rides, runs, hikes, ski tours, swims, and more - if it has GPS, we display it</p>
 					</Card.Content>
 				</Card.Root>
 
-				<Card.Root class="bg-white/10 backdrop-blur-md border-white/20">
+				<Card.Root variant="glass">
 					<Card.Header>
-						<Card.Title class="text-white text-lg flex items-center justify-center gap-2">
+						<Card.Title class="text-lg flex items-center justify-center gap-2">
 							<RefreshCw class="h-5 w-5" />
 							Quick intervals.icu import
 						</Card.Title>
 					</Card.Header>
 					<Card.Content>
-						<p class="text-white/90 text-sm text-left">One-click authorization and your activities start syncing immediately</p>
+						<p class="opacity-90 text-sm text-left">One-click authorization and your activities start syncing immediately</p>
 					</Card.Content>
 				</Card.Root>
 			</div>
@@ -94,7 +88,6 @@ function viewMap() {
 		</div>
 	</div>
   </main>
-</div>
 
 <svelte:head>
     <title>ridelines.xyz - intervals.icu activity mapper</title>

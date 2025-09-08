@@ -20,7 +20,7 @@ const syncMutation = createMutation(() => ({
 
 <AuthRequired>
   <div class="container mx-auto max-w-2xl p-6">
-    <Card.Root>
+    <Card.Root variant="glass">
       <Card.Header class="text-center">
         <Card.Title class="font-bold">Welcome to Ridelines!</Card.Title>
       </Card.Header>
