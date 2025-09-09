@@ -13,6 +13,13 @@ onMount(() => {
       enableXRay: false,
       signing: false,
       logLevel: "ERROR",
+      errorEventHandler: (error: any) => {
+        // Exclude AbortError from being sent to CloudWatch RUM
+        if (error?.type === "AbortError") {
+          return false;
+        }
+        return true;
+      },
     };
 
     const awsRum = new AwsRum(env.PUBLIC_RUM_APP_ID, "1.0.0", "us-west-2", config);
