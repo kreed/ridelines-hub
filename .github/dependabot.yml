@@ -17,20 +17,13 @@ updates:
       prefix-development: "npm-dev"
       include: "scope"
     groups:
-      svelte-ecosystem:
+      # Group all npm dependencies together
+      npm-dependencies:
         patterns:
-          - "@sveltejs/*"
-          - "svelte*"
-          - "vite*"
-      testing:
-        patterns:
-          - "@playwright/*"
-          - "vitest*"
-          - "@vitest/*"
-      tailwind:
-        patterns:
-          - "tailwindcss*"
-          - "@tailwindcss/*"
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -47,3 +40,8 @@ updates:
     commit-message:
       prefix: "ci"
       include: "scope"
+    groups:
+      # Group all GitHub Actions updates together
+      github-actions:
+        patterns:
+          - "*"
