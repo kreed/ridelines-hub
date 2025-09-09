@@ -1,6 +1,7 @@
 <script lang="ts">
-import { LogOut, Settings, User } from "@lucide/svelte";
+import { LogOut, RefreshCw, Settings, User } from "@lucide/svelte";
 import { ClerkLoading, SignedIn, SignedOut, useClerkContext } from "svelte-clerk";
+import { goto } from "$app/navigation";
 import * as Avatar from "./ui/avatar";
 import { Button } from "./ui/button";
 import * as DropdownMenu from "./ui/dropdown-menu";
@@ -27,6 +28,10 @@ const clerkContext = useClerkContext();
         </Avatar.Root>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content class="w-56" align="end">
+        <DropdownMenu.Item onSelect={() => goto("/sync-history")}>
+          <RefreshCw class="mr-2 h-4 w-4" />
+          Sync History
+        </DropdownMenu.Item>
         <DropdownMenu.Item onSelect={() => clerkContext.clerk?.openUserProfile()}>
           <Settings class="mr-2 h-4 w-4" />
           Profile

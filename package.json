@@ -54,6 +54,7 @@
     "@trpc/client": "^11.5.1",
     "aws-rum-web": "^1.25.0",
     "maplibre-gl": "^5.7.1",
+    "dayjs": "^1.11.18",
     "pmtiles": "^4.3.0",
     "svelte-clerk": "^0.17.0",
     "svelte-maplibre-gl": "^1.0.1"

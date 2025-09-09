@@ -1,5 +1,8 @@
 import type { RootRouter } from "@kreed/ridelines-chainring";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import type { inferRouterOutputs } from "@trpc/server";
+
+export type RouterOutputs = inferRouterOutputs<RootRouter>;
 
 // Calculate SHA256 hash for request body
 async function calculateBodyHash(body: string | undefined): Promise<string> {

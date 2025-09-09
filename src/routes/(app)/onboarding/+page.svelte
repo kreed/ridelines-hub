@@ -1,21 +1,62 @@
 <script lang="ts">
-import { createMutation } from "@tanstack/svelte-query";
+import { createMutation, createQuery } from "@tanstack/svelte-query";
+import { onDestroy } from "svelte";
 import { goto } from "$app/navigation";
 import AuthRequired from "$lib/components/auth-required.svelte";
+import SyncStatus from "$lib/components/sync-status.svelte";
 import * as Alert from "$lib/components/ui/alert/index.js";
 import { Button } from "$lib/components/ui/button/index.js";
 import * as Card from "$lib/components/ui/card/index.js";
 import { trpc } from "$lib/utils/trpc";
 
+let syncStarted = $state(false);
+let pollInterval: ReturnType<typeof setInterval> | null = null;
+
+// Check for existing sync status on load
+const initialStatusQuery = createQuery(() => ({
+  queryKey: ["syncStatus"],
+  queryFn: () => trpc.sync.status.query(),
+  staleTime: 0,
+}));
+
+// Enable polling if there's an active sync
+$effect(() => {
+  const status = initialStatusQuery.data;
+  if (status && (status.status === "queued" || status.status === "in_progress")) {
+    syncStarted = true;
+  }
+});
+
+const syncStatusQuery = createQuery(() => ({
+  queryKey: ["syncStatus"],
+  queryFn: () => trpc.sync.status.query(),
+  enabled: syncStarted,
+  refetchInterval: 5000, // Poll every 5 seconds
+}));
+
 const syncMutation = createMutation(() => ({
   mutationFn: () => trpc.sync.trigger.mutate(),
   onSuccess: () => {
-    // Redirect to map after a short delay
+    syncStarted = true;
+  },
+}));
+
+// Monitor sync status for completion
+$effect(() => {
+  const status = syncStatusQuery.data;
+  if (status?.status === "completed") {
+    // Redirect to map after sync completes
     setTimeout(() => {
       goto("/map");
     }, 2000);
-  },
-}));
+  }
+});
+
+onDestroy(() => {
+  if (pollInterval) {
+    clearInterval(pollInterval);
+  }
+});
 </script>
 
 <AuthRequired>
@@ -36,32 +77,30 @@ const syncMutation = createMutation(() => ({
               </Alert.Root>
             {/if}
 
-            {#if syncMutation.isSuccess}
-              <Alert.Root class="max-w-md border-green-500/50 bg-green-500/10 text-green-600 dark:text-green-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <Alert.Title>Success!</Alert.Title>
-                <Alert.Description>Sync initiated successfully! Redirecting to your map...</Alert.Description>
-              </Alert.Root>
+            {#if !syncStarted}
+              <Button
+                onclick={() => syncMutation.mutate()}
+                disabled={syncMutation.isPending}
+                variant="default"
+                size="lg"
+                class="min-w-[200px]"
+              >
+                {#if syncMutation.isPending}
+                  Starting sync...
+                {:else}
+                  Sync Activities
+                {/if}
+              </Button>
             {/if}
 
-            <Button
-              onclick={() => syncMutation.mutate()}
-              disabled={syncMutation.isPending || syncMutation.isSuccess}
-              variant="default"
-              size="lg"
-              class="min-w-[200px]"
-            >
-              {#if syncMutation.isPending}
-                Syncing...
-              {:else if syncMutation.isSuccess}
-                Sync Complete!
-              {:else}
-                Sync Activities
-              {/if}
-            </Button>
+            {#if syncStarted}
+              <div class="w-full max-w-2xl">
+                <SyncStatus syncStatus={syncStarted && syncStatusQuery.data ? syncStatusQuery.data : initialStatusQuery.data || null} />
+              </div>
+            {/if}
 
             {#if syncMutation.isPending}
-              <p class="text-sm text-muted-foreground">This may take a few minutes depending on the number of activities.</p>
+              <p class="text-sm text-muted-foreground">Starting sync process...</p>
             {/if}
           </div>
       </Card.Content>
