@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createMutation, createQuery } from "@tanstack/svelte-query";
-import { onDestroy } from "svelte";
-import { goto } from "$app/navigation";
+import { onMount } from "svelte";
+import { slide } from "svelte/transition";
 import AuthRequired from "$lib/components/auth-required.svelte";
 import SyncStatus from "$lib/components/sync-status.svelte";
 import * as Alert from "$lib/components/ui/alert/index.js";
@@ -9,53 +9,31 @@ import { Button } from "$lib/components/ui/button/index.js";
 import * as Card from "$lib/components/ui/card/index.js";
 import { trpc } from "$lib/utils/trpc";
 
-let syncStarted = $state(false);
-let pollInterval: ReturnType<typeof setInterval> | null = null;
-
-// Check for existing sync status on load
-const initialStatusQuery = createQuery(() => ({
-  queryKey: ["syncStatus"],
-  queryFn: () => trpc.sync.status.query(),
-  staleTime: 0,
-}));
-
-// Enable polling if there's an active sync
-$effect(() => {
-  const status = initialStatusQuery.data;
-  if (status && (status.status === "queued" || status.status === "in_progress")) {
-    syncStarted = true;
-  }
-});
-
+// Check for existing sync status and poll if active
 const syncStatusQuery = createQuery(() => ({
   queryKey: ["syncStatus"],
   queryFn: () => trpc.sync.status.query(),
-  enabled: syncStarted,
-  refetchInterval: 5000, // Poll every 5 seconds
-}));
-
-const syncMutation = createMutation(() => ({
-  mutationFn: () => trpc.sync.trigger.mutate(),
-  onSuccess: () => {
-    syncStarted = true;
+  staleTime: 0,
+  refetchInterval: (query) => {
+    const status = query.state.data;
+    if (status && (status.status === "queued" || status.status === "in_progress")) {
+      return 5000; // Poll every 5 seconds for active syncs
+    }
+    return false; // No polling for completed/failed/null states
   },
 }));
 
-// Monitor sync status for completion
-$effect(() => {
-  const status = syncStatusQuery.data;
-  if (status?.status === "completed") {
-    // Redirect to map after sync completes
-    setTimeout(() => {
-      goto("/map");
-    }, 2000);
-  }
-});
+const syncMutation = createMutation(() => ({
+  mutationFn: (options?: { onboarding?: boolean }) => trpc.sync.trigger.mutate(options || {}),
+  onSuccess: (data) => {
+    // Refetch to get the new sync status
+    syncStatusQuery.refetch();
+  },
+}));
 
-onDestroy(() => {
-  if (pollInterval) {
-    clearInterval(pollInterval);
-  }
+// Auto-trigger sync on mount with onboarding flag
+onMount(() => {
+  syncMutation.mutate({ onboarding: true });
 });
 </script>
 
@@ -77,9 +55,26 @@ onDestroy(() => {
               </Alert.Root>
             {/if}
 
-            {#if !syncStarted}
+            {#if syncStatusQuery.data}
+              <div class="w-full max-w-2xl" transition:slide={{ duration: 300 }}>
+                <SyncStatus syncStatus={syncStatusQuery.data} />
+              </div>
+            {/if}
+
+            {#if syncStatusQuery.data?.status === "completed"}
               <Button
-                onclick={() => syncMutation.mutate()}
+                href="/map"
+                variant="default"
+                size="lg"
+                class="min-w-[200px]"
+              >
+                Go to Map
+              </Button>
+            {/if}
+
+            {#if syncStatusQuery.data?.status === "failed"}
+              <Button
+                onclick={() => syncMutation.mutate({})}
                 disabled={syncMutation.isPending}
                 variant="default"
                 size="lg"
@@ -88,20 +83,11 @@ onDestroy(() => {
                 {#if syncMutation.isPending}
                   Starting sync...
                 {:else}
-                  Sync Activities
+                  Retry Sync
                 {/if}
               </Button>
             {/if}
 
-            {#if syncStarted}
-              <div class="w-full max-w-2xl">
-                <SyncStatus syncStatus={syncStarted && syncStatusQuery.data ? syncStatusQuery.data : initialStatusQuery.data || null} />
-              </div>
-            {/if}
-
-            {#if syncMutation.isPending}
-              <p class="text-sm text-muted-foreground">Starting sync process...</p>
-            {/if}
           </div>
       </Card.Content>
     </Card.Root>
