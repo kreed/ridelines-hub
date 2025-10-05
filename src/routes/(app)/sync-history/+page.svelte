@@ -1,6 +1,6 @@
 <script lang="ts">
 import { AlertCircle, CheckCircle2, ChevronRight, Clock, Loader2, RefreshCw } from "@lucide/svelte";
-import { createQuery } from "@tanstack/svelte-query";
+import { createMutation, createQuery, useQueryClient } from "@tanstack/svelte-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import AuthRequired from "$lib/components/auth-required.svelte";
@@ -11,9 +11,21 @@ import { trpc } from "$lib/utils/trpc";
 
 dayjs.extend(relativeTime);
 
+const queryClient = useQueryClient();
+
 const syncHistoryQuery = createQuery(() => ({
   queryKey: ["syncHistory"],
   queryFn: () => trpc.sync.history.query({ limit: 20 }),
+}));
+
+const triggerSyncMutation = createMutation(() => ({
+  mutationFn: () => trpc.sync.trigger.mutate({}),
+  onSuccess: (data) => {
+    if ("syncId" in data) {
+      expandedSync = data.syncId;
+    }
+    queryClient.invalidateQueries({ queryKey: ["syncHistory"] });
+  },
 }));
 
 function getStatusIcon(status: string) {
@@ -51,14 +63,18 @@ let expandedSync = $state<string | null>(null);
 function toggleExpanded(syncId: string) {
   expandedSync = expandedSync === syncId ? null : syncId;
 }
+
+function handleNewSync() {
+  triggerSyncMutation.mutate();
+}
 </script>
 
 <AuthRequired>
   <div class="container mx-auto max-w-4xl p-6">
     <div class="mb-8 flex items-center justify-between">
       <h1 class="text-3xl font-bold">Sync History</h1>
-      <Button href="/onboarding" variant="outline" size="sm">
-        <RefreshCw class="mr-2 h-4 w-4" />
+      <Button onclick={handleNewSync} variant="outline" size="sm" disabled={triggerSyncMutation.isPending}>
+        <RefreshCw class="mr-2 h-4 w-4 {triggerSyncMutation.isPending ? 'animate-spin' : ''}" />
         New Sync
       </Button>
     </div>
