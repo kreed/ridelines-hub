@@ -50,11 +50,11 @@
   "dependencies": {
     "@clerk/themes": "^2.4.22",
     "@svelte-maplibre-gl/pmtiles": "^1.0.1",
-    "@tanstack/svelte-query": "https://pkg.pr.new/@tanstack/svelte-query@746b9c5",
+    "@tanstack/svelte-query": "^6.0.0",
     "@trpc/client": "^11.6.0",
     "aws-rum-web": "^1.25.0",
-    "maplibre-gl": "^5.7.3",
     "dayjs": "^1.11.18",
+    "maplibre-gl": "^5.7.3",
     "pmtiles": "^4.3.0",
     "svelte-clerk": "^0.17.3",
     "svelte-maplibre-gl": "^1.0.1"
