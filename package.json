@@ -18,7 +18,7 @@
     "test:e2e": "playwright test"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
+    "@biomejs/biome": "2.2.5",
     "@internationalized/date": "^3.9.0",
     "@kreed/ridelines-chainring": "^1.0.0-20250901003614",
     "@lucide/svelte": "^0.544.0",
@@ -28,7 +28,7 @@
     "@sveltejs/kit": "^2.43.5",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "@tailwindcss/vite": "^4.1.13",
-    "@types/node": "^24.5.2",
+    "@types/node": "^24.7.0",
     "@vitest/browser": "^3.2.3",
     "bits-ui": "^2.11.4",
     "clsx": "^2.1.1",
